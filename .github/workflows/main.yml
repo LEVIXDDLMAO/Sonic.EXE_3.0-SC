@@ -182,6 +182,7 @@ jobs:
           haxelib run lime setup
           haxelib git hscript https://github.com/HaxeFoundation/hscript
           haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib install hxCodec
           haxelib list
         shell: cmd
       - name: Create Version Tag
