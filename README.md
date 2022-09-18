@@ -1,6 +1,5 @@
-# NOTE: THIS ENGINE IS STILL BEING WORKED ON! Report any bugs in the issues page!
-
-![Psych Engine Extra](https://user-images.githubusercontent.com/85134252/153526241-9f265b56-ffd1-4452-bb61-c7500471a910.png)
+# THIS SOURCE CODE IS FAN MADE, WITH SOME SOURCE FROM SONIC.EXE 2.0
+### This is based on Psych Engine Extra made by Starmapo, running on 0.5.2h, this is also an html5 port made by Levi
 
 # Friday Night Funkin' - Psych Engine Extra
 Modified version of Psych Engine adding more stuff. (see below)
