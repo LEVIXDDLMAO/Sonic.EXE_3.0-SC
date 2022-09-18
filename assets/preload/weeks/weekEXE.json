@@ -1,0 +1,22 @@
+{
+	"songs": [
+		["Too Slow", "sonicexe", [34, 51, 68]],
+		["You Cant Run", "ycr", [34, 51, 68]],
+		["Triple Trouble", "tails", [34, 51, 68]]
+	],
+
+	"weekCharacters": [
+		"spooky",
+		"bf",
+		"gf"
+	],
+	"weekBackground": "halloween",
+
+	"storyName": "Spooky Month",
+	"weekBefore": "week1",
+	"weekName": "Week 2",
+	"startUnlocked": true,
+
+	"hideStoryMode": true,
+	"hideFreeplay": false
+}
