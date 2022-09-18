@@ -1,6 +1,8 @@
 # THIS SOURCE CODE IS FAN MADE, WITH SOME SOURCE FROM SONIC.EXE 2.0
 ### This is based on Psych Engine Extra made by Starmapo, running on 0.5.2h, this is also an html5 port made by Levi and isn't in fact real source code
 
+### Btw please do not fork this until it's finished, otherwise you go to hell, before you die.
+
 # Friday Night Funkin' - Psych Engine Extra
 Modified version of Psych Engine adding more stuff. (see below)
 
