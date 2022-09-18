@@ -1,11 +1,3 @@
-#if HSCRIPT_ALLOWED
-#if LUA_ALLOWED
-import FunkinLua;
-#end
-import PhillyGlow;
-#if VIDEOS_ALLOWED
-import vlc.MP4Handler;
-#end
 import flixel.system.macros.FlxMacroUtil;
 import flixel.math.FlxAngle;
 import Achievements.AchievementObject;
@@ -58,6 +50,7 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.system.FlxSound;
 import flixel.math.FlxRect;
+#if HSCRIPT_ALLOWED
 #if DISCORD_ALLOWED
 import Discord.DiscordClient;
 #end
@@ -84,13 +77,8 @@ import hscript.InterpEx;
 using StringTools;
 
 class FunkinHscript extends InterpEx {
-	public var scriptName:String = '';
-	public var closed:Bool = false;
-	public var lastCalledFunction:String = '';
-
-    public function new(path:String) {
+    public function new() {
         super();
-		scriptName = path.split('/')[path.split('/').length - 1];
         //CLASSES
         //THIS IS PROBABLY MORE THAN ANYONE EVER NEEDS AND YOU CAN IMPORT CLASSES MANUALLY ANYWAYS BUT WHATEVER
         variables.set('AL', AL);
@@ -159,7 +147,6 @@ class FunkinHscript extends InterpEx {
         #if sys
         variables.set('File', File);
         variables.set('FileSystem', FileSystem);
-		variables.set('Sys', SysCustom);
         #end
 
         variables.set('AchievementObject', AchievementObject);
@@ -185,10 +172,16 @@ class FunkinHscript extends InterpEx {
         variables.set('CustomFadeTransition', CustomFadeTransition);
         variables.set('DialogueBox', DialogueBox);
         variables.set('DialogueBoxPsych', DialogueBoxPsych);
+        #if DISCORD_ALLOWED
+        variables.set('DiscordClient', DiscordClient);
+        #end
+        #if VIDEOS_ALLOWED
+        variables.set('FlxVideo', FlxVideo);
+        #end
         variables.set('FreeplayState', FreeplayState);
         variables.set('FunkinHscript', FunkinHscript);
         variables.set('FunkinLua', FunkinLua);
-        variables.set('GameOverSubstate', GameOverSubstate);
+        variables.set('GameOverSubState', GameOverSubState);
         variables.set('HealthIcon', HealthIcon);
         variables.set('Highscore', Highscore);
         variables.set('InputFormatter', InputFormatter);
@@ -201,33 +194,17 @@ class FunkinHscript extends InterpEx {
         variables.set('OptionsState', OptionsState);
         variables.set('Paths', Paths);
         variables.set('PauseSubState', PauseSubState);
-		variables.set('PhillyGlowParticle', PhillyGlowParticle);
-		variables.set('PhillyGlowGradient', PhillyGlowGradient);
         variables.set('PlayState', PlayState);
         variables.set('Prompt', Prompt);
-		variables.set('SkinData', SkinData);
         variables.set('Song', Song);
         variables.set('StageData', StageData);
         variables.set('StoryMenuState', StoryMenuState);
         variables.set('StrumNote', StrumNote);
-		variables.set('TankmenBG', TankmenBG);
         variables.set('TitleState', TitleState);
         variables.set('WeekData', WeekData);
         variables.set('WiggleEffect', WiggleEffect);
-		#if DISCORD_ALLOWED
-        variables.set('DiscordClient', DiscordClient);
-        #end
-		#if LUA_ALLOWED
-		variables.set('DebugLuaText', DebugLuaText);
-		variables.set('ModchartSprite', ModchartSprite);
-		variables.set('ModchartText', ModchartText);
-		#end
-        #if VIDEOS_ALLOWED
-        variables.set('MP4Handler', MP4Handler);
-        #end
-		
+
         //VARIABLES
-		variables.set('Function_StopHscript', FunkinLua.Function_StopLua);
         variables.set('Function_Stop', FunkinLua.Function_Stop);
 		variables.set('Function_Continue', FunkinLua.Function_Continue);
 		variables.set('inChartEditor', PlayState.instance.inEditor);
@@ -240,7 +217,8 @@ class FunkinHscript extends InterpEx {
 		variables.set('scrollSpeed', PlayState.SONG.speed);
 		variables.set('playerKeyAmount', PlayState.SONG.playerKeyAmount);
 		variables.set('opponentKeyAmount', PlayState.SONG.opponentKeyAmount);
-		variables.set('skinModifier', PlayState.SONG.skinModifier);
+		variables.set('playerSkin', PlayState.instance.uiSkinMap.get('player').name);
+		variables.set('opponentSkin', PlayState.instance.uiSkinMap.get('opponent').name);
 		variables.set('songLength', 0);
 		variables.set('songName', PlayState.SONG.song);
 		variables.set('startedCountdown', false);
@@ -262,8 +240,6 @@ class FunkinHscript extends InterpEx {
 		// PlayState cringe ass nae nae bullcrap
 		variables.set('curBeat', 0);
 		variables.set('curNumeratorBeat', 0);
-		variables.set('curDecBeat', 0);
-		variables.set('curDecStep', 0);
 		variables.set('curStep', 0);
 
 		variables.set('score', 0);
@@ -293,7 +269,6 @@ class FunkinHscript extends InterpEx {
 		variables.set('practice', PlayState.instance.practiceMode);
 		variables.set('opponentPlay', PlayState.instance.opponentChart);
 		variables.set('playbackRate', PlayState.instance.playbackRate);
-		variables.set('demoMode', PlayState.instance.demoMode);
 
 		for (i in 0...Note.MAX_KEYS) {
 			variables.set('defaultPlayerStrumX$i', 0);
@@ -331,10 +306,6 @@ class FunkinHscript extends InterpEx {
 		variables.set('gameQuality', ClientPrefs.gameQuality);
 		variables.set('instantRestart', ClientPrefs.instantRestart);
 		variables.set('lowQuality', ClientPrefs.gameQuality != 'Normal');
-		variables.set('noteSkin', ClientPrefs.noteSkin);
-		variables.set('uiSkin', ClientPrefs.uiSkin);
-
-		variables.set("scriptName", scriptName);
 
 		#if windows
 		variables.set('buildTarget', 'windows');
@@ -368,29 +339,29 @@ class FunkinHscript extends InterpEx {
 
     inline function getInstance()
 	{
-		return PlayState.instance.isDead ? GameOverSubstate.instance : PlayState.instance;
+		return PlayState.instance.isDead ? GameOverSubState.instance : PlayState.instance;
 	}
 }
 
 //cant use an abstract as a value so made one with just the static functions
 class FlxColorCustom
 {
-	public static inline var TRANSPARENT = 0x00000000;
-	public static inline var WHITE = 0xFFFFFFFF;
-	public static inline var GRAY = 0xFF808080;
-	public static inline var BLACK = 0xFF000000;
+	public static inline var TRANSPARENT:FlxColor = 0x00000000;
+	public static inline var WHITE:FlxColor = 0xFFFFFFFF;
+	public static inline var GRAY:FlxColor = 0xFF808080;
+	public static inline var BLACK:FlxColor = 0xFF000000;
 
-	public static inline var GREEN = 0xFF008000;
-	public static inline var LIME = 0xFF00FF00;
-	public static inline var YELLOW = 0xFFFFFF00;
-	public static inline var ORANGE = 0xFFFFA500;
-	public static inline var RED = 0xFFFF0000;
-	public static inline var PURPLE = 0xFF800080;
-	public static inline var BLUE = 0xFF0000FF;
-	public static inline var BROWN = 0xFF8B4513;
-	public static inline var PINK = 0xFFFFC0CB;
-	public static inline var MAGENTA = 0xFFFF00FF;
-	public static inline var CYAN = 0xFF00FFFF;
+	public static inline var GREEN:FlxColor = 0xFF008000;
+	public static inline var LIME:FlxColor = 0xFF00FF00;
+	public static inline var YELLOW:FlxColor = 0xFFFFFF00;
+	public static inline var ORANGE:FlxColor = 0xFFFFA500;
+	public static inline var RED:FlxColor = 0xFFFF0000;
+	public static inline var PURPLE:FlxColor = 0xFF800080;
+	public static inline var BLUE:FlxColor = 0xFF0000FF;
+	public static inline var BROWN:FlxColor = 0xFF8B4513;
+	public static inline var PINK:FlxColor = 0xFFFFC0CB;
+	public static inline var MAGENTA:FlxColor = 0xFFFF00FF;
+	public static inline var CYAN:FlxColor = 0xFF00FFFF;
 
 	/**
 	 * A `Map<String, Int>` whose values are the static colors of `FlxColor`.
@@ -631,58 +602,4 @@ class FlxKeyCustom
 		return fromStringMap.exists(s) ? fromStringMap.get(s) : NONE;
 	}
 }
-
-#if sys
-class SysCustom
-{
-	public static function print(v:Dynamic) {
-		Sys.print(v);
-	}
-	public static function println(v:Dynamic) {
-		Sys.println(v);
-	}
-	public static function args() {
-		return Sys.args();
-	}
-	public static function getEnv(s:String) {
-		return Sys.getEnv(s);
-	}
-	public static function environment() {
-		return Sys.environment();
-	}
-	public static function sleep(seconds:Float) {
-		Sys.sleep(seconds);
-	}
-	public static function getCwd() {
-		return Sys.getCwd();
-	}
-	public static function systemName() {
-		return Sys.systemName();
-	}
-	public static function exit(code:Int) {
-		Sys.exit(code);
-	}
-	public static function time() {
-		return Sys.time();
-	}
-	public static function cpuTime() {
-		return Sys.cpuTime();
-	}
-	public static function programPath() {
-		return Sys.programPath();
-	}
-	public static function getChar(echo:Bool) {
-		return Sys.getChar(echo);
-	}
-	public static function stdin() {
-		return Sys.stdin();
-	}
-	public static function stdout() {
-		return Sys.stdout();
-	}
-	public static function stderr() {
-		return Sys.stderr();
-	}
-}
-#end
 #end

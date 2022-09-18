@@ -22,6 +22,7 @@ import haxe.Json;
 import DialogueBoxPsych;
 import flixel.FlxCamera;
 import flixel.group.FlxSpriteGroup;
+import lime.system.Clipboard;
 #if MODS_ALLOWED
 import sys.io.File;
 #end
@@ -524,6 +525,11 @@ class DialogueCharacterEditorState extends MusicBeatState
 				FlxG.sound.volumeUpKeys = [];
 				blockInput = true;
 
+				if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V && Clipboard.text != null) { //Copy paste
+					inputText.text = ClipboardAdd(inputText.text);
+					inputText.caretIndex = inputText.text.length;
+					getEvent(FlxUIInputText.CHANGE_EVENT, inputText, null, []);
+				}
 				if (FlxG.keys.justPressed.ENTER)
 					inputText.hasFocus = false;
 				break;
@@ -542,6 +548,10 @@ class DialogueCharacterEditorState extends MusicBeatState
 					FlxG.sound.volumeUpKeys = [];
 					blockInput = true;
 
+					if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V && Clipboard.text != null) { //Copy paste
+						leText.text = ClipboardAdd(leText.text);
+						leText.caretIndex = leText.text.length;
+					}
 					if (FlxG.keys.justPressed.ENTER) {
 						leText.hasFocus = false;
 						leText.focusLost();
@@ -699,9 +709,8 @@ class DialogueCharacterEditorState extends MusicBeatState
 			}
 
 			if (FlxG.keys.justPressed.ESCAPE) {
-				WeekData.loadTheFirstEnabledMod();
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
-				CoolUtil.playMenuMusic();
+				FlxG.sound.playMusic(Paths.music('freakyMenu'), 1);
 				transitioning = true;
 			}
 
@@ -833,5 +842,15 @@ class DialogueCharacterEditorState extends MusicBeatState
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
 		FlxG.log.error("Problem saving file");
+	}
+
+	function ClipboardAdd(prefix:String = ''):String {
+		if (prefix.toLowerCase().endsWith('v')) //probably copy paste attempt
+		{
+			prefix = prefix.substring(0, prefix.length-1);
+		}
+
+		var text:String = prefix + Clipboard.text.replace('\n', '');
+		return text;
 	}
 }

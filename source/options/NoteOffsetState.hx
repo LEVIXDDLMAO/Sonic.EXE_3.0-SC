@@ -39,14 +39,6 @@ class NoteOffsetState extends MusicBeatState
 
 	var changeModeText:FlxText;
 
-	#if mobile
-	var buttonLEFT:Button;
-	var buttonRESET:Button;
-	var buttonRIGHT:Button;
-	var buttonENTER:Button;
-	var buttonESC:Button;
-	#end
-
 	override public function create()
 	{
 		// Cameras
@@ -108,7 +100,7 @@ class NoteOffsetState extends MusicBeatState
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.35;
 
-		rating = new FlxSprite().loadGraphic(Paths.image('uiskins/default/base/sick'));
+		rating = new FlxSprite().loadGraphic(Paths.image('uiskins/default/sick'));
 		rating.cameras = [camHUD];
 		rating.setGraphicSize(Std.int(rating.width * 0.7));
 		rating.updateHitbox();
@@ -129,7 +121,7 @@ class NoteOffsetState extends MusicBeatState
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
 		{
-			var numScore:FlxSprite = new FlxSprite(43 * daLoop).loadGraphic(Paths.image('uiskins/default/base/num$i'));
+			var numScore:FlxSprite = new FlxSprite(43 * daLoop).loadGraphic(Paths.image('uiskins/default/num$i'));
 			numScore.cameras = [camHUD];
 			numScore.setGraphicSize(Std.int(numScore.width * 0.5));
 			numScore.updateHitbox();
@@ -164,7 +156,7 @@ class NoteOffsetState extends MusicBeatState
 		barPercent = ClientPrefs.noteOffset;
 		updateNoteDelay();
 		
-		timeBarBG = new FlxSprite(0, timeTxt.y + 8).loadGraphic(Paths.image('uiskins/default/base/timeBar'));
+		timeBarBG = new FlxSprite(0, timeTxt.y + 8).loadGraphic(Paths.image('uiskins/default/timeBar'));
 		timeBarBG.setGraphicSize(Std.int(timeBarBG.width * 1.2));
 		timeBarBG.updateHitbox();
 		timeBarBG.cameras = [camHUD];
@@ -200,19 +192,6 @@ class NoteOffsetState extends MusicBeatState
 
 		Conductor.changeBPM(128);
 		FlxG.sound.playMusic(Paths.music('offsetSong'), 1, true);
-
-		#if mobile
-		buttonLEFT = new Button(834, 564, 'LEFT');
-		add(buttonLEFT);
-		buttonRESET = new Button(984, buttonLEFT.y, 'RESET');
-		add(buttonRESET);
-		buttonRIGHT = new Button(buttonLEFT.x + 300, buttonLEFT.y, 'RIGHT');
-		add(buttonRIGHT);
-		buttonENTER = new Button(492, 564, 'ENTER');
-		add(buttonENTER);
-		buttonESC = new Button(buttonENTER.x + 136, buttonENTER.y, 'ESC');
-		add(buttonESC);
-		#end
 
 		super.create();
 	}
@@ -308,7 +287,7 @@ class NoteOffsetState extends MusicBeatState
 				}
 			}
 
-			if (controls.RESET #if mobile || buttonRESET.justPressed #end)
+			if (controls.RESET)
 			{
 				for (i in 0...ClientPrefs.comboOffset.length)
 				{
@@ -319,25 +298,25 @@ class NoteOffsetState extends MusicBeatState
 		}
 		else
 		{
-			if (controls.UI_LEFT_P #if mobile || buttonLEFT.justPressed #end)
+			if (controls.UI_LEFT_P)
 			{
 				barPercent = CoolUtil.boundTo(ClientPrefs.noteOffset - 1, delayMin, delayMax);
 				updateNoteDelay();
 			}
-			else if (controls.UI_RIGHT_P #if mobile || buttonRIGHT.justPressed #end)
+			else if (controls.UI_RIGHT_P)
 			{
 				barPercent = CoolUtil.boundTo(ClientPrefs.noteOffset + 1, delayMin, delayMax);
 				updateNoteDelay();
 			}
 
 			var mult:Int = 1;
-			if (controls.UI_LEFT || controls.UI_RIGHT #if mobile || buttonLEFT.pressed || buttonRIGHT.pressed #end)
+			if (controls.UI_LEFT || controls.UI_RIGHT)
 			{
 				holdTime += elapsed;
 				if (controls.UI_LEFT) mult = -1;
 			}
 
-			if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || buttonLEFT.justReleased || buttonRIGHT.justReleased #end) holdTime = 0;
+			if (controls.UI_LEFT_R || controls.UI_RIGHT_R) holdTime = 0;
 
 			if (holdTime > 0.5)
 			{
@@ -346,7 +325,7 @@ class NoteOffsetState extends MusicBeatState
 				updateNoteDelay();
 			}
 
-			if (controls.RESET #if mobile || buttonRESET.justPressed #end)
+			if (controls.RESET)
 			{
 				holdTime = 0;
 				barPercent = 0;
@@ -354,13 +333,13 @@ class NoteOffsetState extends MusicBeatState
 			}
 		}
 
-		if (controls.ACCEPT #if mobile || buttonENTER.justPressed #end)
+		if (controls.ACCEPT)
 		{
 			onComboMenu = !onComboMenu;
 			updateMode();
 		}
 
-		if (controls.BACK #if mobile || buttonESC.justPressed #end)
+		if (controls.BACK)
 		{
 			if (zoomTween != null) zoomTween.cancel();
 			if (beatTween != null) beatTween.cancel();
@@ -368,7 +347,7 @@ class NoteOffsetState extends MusicBeatState
 			persistentUpdate = false;
 			CustomFadeTransition.nextCamera = camOther;
 			MusicBeatState.switchState(new options.OptionsState());
-			CoolUtil.playMenuMusic();
+			FlxG.sound.playMusic(Paths.music('freakyMenu'), 1, true);
 			FlxG.mouse.visible = false;
 		}
 
@@ -485,8 +464,6 @@ class NoteOffsetState extends MusicBeatState
 			changeModeText.text = '< Note/Beat Delay (Press Accept to Switch) >';
 
 		changeModeText.text = changeModeText.text.toUpperCase();
-		#if !mobile
 		FlxG.mouse.visible = onComboMenu;
-		#end
 	}
 }

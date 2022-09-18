@@ -24,29 +24,19 @@ class CoolUtil
 
 	public static var difficulties:Array<String> = [];
 
-	inline public static function quantize(f:Float, snap:Float){
-		// changed so this actually works lol
-		var m:Float = Math.fround(f * snap);
-		return (m / snap);
-	}
-
 	public static function getDifficultyFilePath(?num:Int = null)
 	{
 		if (num == null) num = PlayState.storyDifficulty;
 		if (num >= difficulties.length) num = difficulties.length - 1;
 
 		var fileSuffix:String = difficulties[num];
-		if (fileSuffix == null) {
+		if (fileSuffix.toLowerCase().trim() != defaultDifficulty.toLowerCase())
+		{
+			fileSuffix = '-$fileSuffix';
+		}
+		else
+		{
 			fileSuffix = '';
-		} else {
-			if (fileSuffix != defaultDifficulty)
-			{
-				fileSuffix = '-$fileSuffix';
-			}
-			else
-			{
-				fileSuffix = '';
-			}
 		}
 		return Paths.formatToSongPath(fileSuffix);
 	}
@@ -60,7 +50,7 @@ class CoolUtil
 		return Math.max(min, Math.min(max, value));
 	}
 
-	public static function coolTextFile(path:String)
+	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = [];
 		#if MODS_ALLOWED
@@ -79,30 +69,6 @@ class CoolUtil
 		return daList;
 	}
 
-	public static function coolArrayTextFile(path:String)
-	{
-		var daList:Array<String> = [];
-		var daArray:Array<Array<String>> = [];
-		#if MODS_ALLOWED
-		if (FileSystem.exists(path)) daList = File.getContent(path).trim().split('\n');
-		else if (Assets.exists(path))
-		#else
-		if (Assets.exists(path))
-		#end
-			daList = Assets.getText(path).trim().split('\n');
-
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-		}
-
-		for (i in daList) {
-			daArray.push(i.split(' '));
-		}
-
-		return daArray;
-	}
-	
 	public static function dominantColor(sprite:FlxSprite):Int {
 		var countByColor:Map<Int, Int> = [];
 		for (col in 0...sprite.frameWidth) {
@@ -141,11 +107,11 @@ class CoolUtil
 
 	//uhhhh does this even work at all? i'm starting to doubt
 	public static function precacheSound(sound:String, ?library:String = null):Void {
-		Paths.sound(sound, library);
+		Paths.returnSound('sounds', sound, library);
 	}
 
 	public static function precacheMusic(sound:String, ?library:String = null):Void {
-		Paths.music(sound, library);
+		Paths.returnSound('music', sound, library);
 	}
 
 	public static function browserLoad(site:String) {
@@ -160,10 +126,6 @@ class CoolUtil
 		song = Paths.formatToSongPath(song);
 		difficulties = defaultDifficulties.copy();
 		var diffStr:String = WeekData.getCurrentWeek().difficulties;
-		if (!PlayState.isStoryMode) {
-			var meta = Song.getMetaFile(song);
-			if (meta.freeplayDifficulties != null && meta.freeplayDifficulties.length > 0) diffStr = meta.freeplayDifficulties;
-		}
 		if (diffStr == null || diffStr.length == 0) diffStr = 'Easy,Normal,Hard';
 		diffStr = diffStr.trim(); //Fuck you HTML5
 
@@ -196,7 +158,7 @@ class CoolUtil
 				while (i < len) {
 					if (diffs[i] != null) {
 						var suffix = '-${Paths.formatToSongPath(diffs[i])}';
-						if (diffs[i] == defaultDifficulty) {
+						if (Paths.formatToSongPath(diffs[i]) == defaultDifficulty.toLowerCase()) {
 							suffix = '';
 						}
 						var poop:String = song + suffix;
@@ -223,9 +185,5 @@ class CoolUtil
 		Image.loadFromFile(Paths.getPath('images/$image.png', IMAGE)).onComplete(function (img) {
 			Application.current.window.setIcon(img);
 		});
-	}
-
-	public static function playMenuMusic(volume:Float = 1) {
-		FlxG.sound.playMusic(Paths.music('freakyMenu'), volume);
 	}
 }

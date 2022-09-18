@@ -7,7 +7,6 @@ import flixel.input.keyboard.FlxKey;
 class ClientPrefs {
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
-	public static var opponentStrums:Bool = true;
 	public static var showFPS:Bool = true;
 	public static var flashing:Bool = true;
 	public static var globalAntialiasing:Bool = true;
@@ -27,19 +26,17 @@ class ClientPrefs {
 	public static var controllerMode:Bool = false;
 	public static var hitsoundVolume:Float = 0;
 	public static var pauseMusic:String = 'Tea Time';
-	public static var checkForUpdates:Bool = true;
+	public static var freeplayAlphabetic:Bool = false;
+	public static var instVolume:Float = 1;
+	public static var voicesVolume:Float = 1;
 	public static var underlayAlpha:Float = 0;
-	public static var underlayFull:Bool = false;
 	public static var instantRestart:Bool = false;
 	#if !html5
 	public static var autoPause:Bool = true;
 	#else
 	public static var autoPause:Bool = false;
 	#end
-	public static var focusLostPause:Bool = true;
 	public static var shitMisses:Bool = true;
-	public static var smoothHealth:Bool = true;
-	public static var keybindReminders:Bool = true;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
 		'scrolltype' => 'multiplicative', 
@@ -58,8 +55,7 @@ class ClientPrefs {
 		'instakill' => false,
 		'practice' => false,
 		'botplay' => false,
-		'opponentplay' => false,
-		'demomode' => false
+		'opponentplay' => false
 	];
 
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];
@@ -68,19 +64,17 @@ class ClientPrefs {
 	public static var goodWindow:Int = 90;
 	public static var badWindow:Int = 135;
 	public static var safeFrames:Float = 10;
-	public static var noteSkin:String = 'Default';
-	public static var uiSkin:String = 'Default';
 
 	//Every key has two binds, add your key bind down here and then add your control on options/ControlsSubState.hx and Controls.hx
 	public static var keyBinds:Map<String, Array<FlxKey>> = [
 		//Key Bind, Name for ControlsSubState
-		'note1_0'		=> [SPACE, UP],
+		'note1_0'		=> [S, SPACE],
 
-		'note2_0'		=> [A, LEFT],
+		'note2_0'		=> [A, NONE],
 		'note2_1'		=> [D, RIGHT],
 
-		'note3_0'		=> [A, LEFT],
-		'note3_1'		=> [S, DOWN],
+		'note3_0'		=> [A, NONE],
+		'note3_1'		=> [S, NONE],
 		'note3_2'		=> [D, RIGHT],
 
 		'note4_0'		=> [A, LEFT],
@@ -211,7 +205,6 @@ class ClientPrefs {
 	public static function saveSettings() {
 		FlxG.save.data.downScroll = downScroll;
 		FlxG.save.data.middleScroll = middleScroll;
-		FlxG.save.data.opponentStrums = opponentStrums;
 		FlxG.save.data.showFPS = showFPS;
 		FlxG.save.data.flashing = flashing;
 		FlxG.save.data.globalAntialiasing = globalAntialiasing;
@@ -229,14 +222,13 @@ class ClientPrefs {
 		FlxG.save.data.noReset = noReset;
 		FlxG.save.data.healthBarAlpha = healthBarAlpha;
 		FlxG.save.data.comboOffset = comboOffset;
+		FlxG.save.data.freeplayAlphabetic = freeplayAlphabetic;
+		FlxG.save.data.instVolume = instVolume;
+		FlxG.save.data.voicesVolume = voicesVolume;
 		FlxG.save.data.underlayAlpha = underlayAlpha;
-		FlxG.save.data.underlayFull = underlayFull;
 		FlxG.save.data.instantRestart = instantRestart;
 		FlxG.save.data.autoPause = autoPause;
-		FlxG.save.data.focusLostPause = focusLostPause;
 		FlxG.save.data.shitMisses = shitMisses;
-		FlxG.save.data.smoothHealth = smoothHealth;
-		FlxG.save.data.keybindReminders = keybindReminders;
 		FlxG.save.data.achievementsMap = Achievements.achievementsMap;
 		FlxG.save.data.henchmenDeath = Achievements.henchmenDeath;
 
@@ -248,7 +240,6 @@ class ClientPrefs {
 		FlxG.save.data.controllerMode = controllerMode;
 		FlxG.save.data.hitsoundVolume = hitsoundVolume;
 		FlxG.save.data.pauseMusic = pauseMusic;
-		FlxG.save.data.checkForUpdates = checkForUpdates;
 		FlxG.save.data.gameplaySettings = gameplaySettings;
 	
 		FlxG.save.flush();
@@ -266,9 +257,6 @@ class ClientPrefs {
 		}
 		if (FlxG.save.data.middleScroll != null) {
 			middleScroll = FlxG.save.data.middleScroll;
-		}
-		if(FlxG.save.data.opponentStrums != null) {
-			opponentStrums = FlxG.save.data.opponentStrums;
 		}
 		if (FlxG.save.data.showFPS != null) {
 			showFPS = FlxG.save.data.showFPS;
@@ -358,15 +346,17 @@ class ClientPrefs {
 		if(FlxG.save.data.pauseMusic != null) {
 			pauseMusic = FlxG.save.data.pauseMusic;
 		}
-		if (FlxG.save.data.checkForUpdates != null)
-		{
-			checkForUpdates = FlxG.save.data.checkForUpdates;
-		}	
+		if (FlxG.save.data.freeplayAlphabetic != null) {
+			freeplayAlphabetic = FlxG.save.data.freeplayAlphabetic;
+		}
+		if (FlxG.save.data.instVolume != null) {
+			instVolume = FlxG.save.data.instVolume;
+		}
+		if (FlxG.save.data.voicesVolume != null) {
+			voicesVolume = FlxG.save.data.voicesVolume;
+		}
 		if (FlxG.save.data.underlayAlpha != null) {
 			underlayAlpha = FlxG.save.data.underlayAlpha;
-		}
-		if (FlxG.save.data.underlayFull != null) {
-			underlayFull = FlxG.save.data.underlayFull;
 		}
 		if (FlxG.save.data.instantRestart != null) {
 			instantRestart = FlxG.save.data.instantRestart;
@@ -375,17 +365,8 @@ class ClientPrefs {
 			autoPause = FlxG.save.data.autoPause;
 			FlxG.autoPause = autoPause;
 		}
-		if (FlxG.save.data.focusLostPause != null) {
-			focusLostPause = FlxG.save.data.focusLostPause;
-		}
 		if (FlxG.save.data.shitMisses != null) {
 			shitMisses = FlxG.save.data.shitMisses;
-		}
-		if (FlxG.save.data.smoothHealth != null) {
-			smoothHealth = FlxG.save.data.smoothHealth;
-		}
-		if (FlxG.save.data.keybindReminders != null) {
-			keybindReminders = FlxG.save.data.keybindReminders;
 		}
 		if (FlxG.save.data.gameplaySettings != null)
 		{

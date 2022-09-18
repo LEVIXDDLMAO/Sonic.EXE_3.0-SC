@@ -1,6 +1,5 @@
 package;
 
-import flixel.text.FlxText;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -19,71 +18,41 @@ class GameplayChangersSubState extends MusicBeatSubState
 	private var checkboxGroup:FlxTypedGroup<CheckboxThingie>;
 	private var grpTexts:FlxTypedGroup<AttachedText>;
 
-	private var descBox:FlxSprite;
-	private var descText:FlxText;
-
-	#if mobile
-	var buttonUP:Button;
-	var buttonDOWN:Button;
-	var buttonLEFT:Button;
-	var buttonRESET:Button;
-	var buttonRIGHT:Button;
-	var buttonENTER:Button;
-	var buttonESC:Button;
-	#end
-
 	function getOptions()
 	{
-		var goption:GameplayOption = new GameplayOption('Scroll Type',
-			'How should the scroll speed be affected?',
-			'scrolltype',
-			'string',
-			'multiplicative',
-			["multiplicative", "constant"]);
+		var goption:GameplayOption = new GameplayOption('Scroll Type', 'scrolltype', 'string', 'multiplicative', ["multiplicative", "constant"]);
 		optionsArray.push(goption);
 
-		var option:GameplayOption = new GameplayOption('Scroll Speed',
-			'',
-			'scrollspeed',
-			'float',
-			1);
+		var option:GameplayOption = new GameplayOption('Scroll Speed', 'scrollspeed', 'float', 1);
 		option.scrollSpeed = 1.5;
 		option.minValue = 0.5;
 		option.changeValue = 0.1;
 		if (goption.getValue() != "constant")
 		{
-			option.description = "Multiplies the chart's scroll speed.";
 			option.displayFormat = '%vX';
 			option.maxValue = 3;
 		}
 		else
 		{
-			option.description = 'Forces a single scroll speed for every chart.';
 			option.displayFormat = "%v";
 			option.maxValue = 6;
 		}
 		optionsArray.push(option);
 
+		/*
 		#if cpp
-		var option:GameplayOption = new GameplayOption('Playback Rate',
-			"Changes the song's playback rate, making it go faster.",
-			'songspeed',
-			'float',
-			1);
-		option.scrollSpeed = 0.5;
-		option.minValue = 1;
+		var option:GameplayOption = new GameplayOption('Playback Rate', 'songspeed', 'float', 1);
+		option.scrollSpeed = 0.2;
+		option.minValue = 0.5;
 		option.maxValue = 2.5;
 		option.decimals = 2;
 		option.changeValue = 0.01;
 		option.displayFormat = '%vX';
 		optionsArray.push(option);
 		#end
+		*/
 
-		var option:GameplayOption = new GameplayOption('Health Gain Multiplier',
-			"Multiplies the health gained from hitting notes.",
-			'healthgain',
-			'float',
-			1);
+		var option:GameplayOption = new GameplayOption('Health Gain Multiplier', 'healthgain', 'float', 1);
 		option.scrollSpeed = 2.5;
 		option.minValue = 0;
 		option.maxValue = 5;
@@ -91,11 +60,7 @@ class GameplayChangersSubState extends MusicBeatSubState
 		option.displayFormat = '%vX';
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Health Loss Multiplier',
-			"Multiplies the health lost from missing notes or hitting hurt notes.",
-			'healthloss',
-			'float',
-			1);
+		var option:GameplayOption = new GameplayOption('Health Loss Multiplier', 'healthloss', 'float', 1);
 		option.scrollSpeed = 2.5;
 		option.minValue = 0.5;
 		option.maxValue = 5;
@@ -103,39 +68,16 @@ class GameplayChangersSubState extends MusicBeatSubState
 		option.displayFormat = '%vX';
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Play as Opponent',
-			"Self-explanatory! Does not save your score.",
-			'opponentplay',
-			'bool',
-			false);
+		var option:GameplayOption = new GameplayOption('Play as Opponent', 'opponentplay', 'bool', false);
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Instakill on Miss',
-			"Instantly die if you miss a note or hit a hurt note.",
-			'instakill',
-			'bool',
-			false);
+		var option:GameplayOption = new GameplayOption('Instakill on Miss', 'instakill', 'bool', false);
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Practice Mode',
-			"Prevents you from dying. Does not save your score.",
-			'practice',
-			'bool',
-			false);
+		var option:GameplayOption = new GameplayOption('Practice Mode', 'practice', 'bool', false);
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Botplay',
-			"Let the game play by itself!",
-			'botplay',
-			'bool',
-			false);
-		optionsArray.push(option);
-
-		var option:GameplayOption = new GameplayOption('Demo Mode',
-			"Hides most HUD elements so you can showcase the song. Botplay is activated.",
-			'demomode',
-			'bool',
-			false);
+		var option:GameplayOption = new GameplayOption('Botplay', 'botplay', 'bool', false);
 		optionsArray.push(option);
 	}
 
@@ -167,16 +109,6 @@ class GameplayChangersSubState extends MusicBeatSubState
 
 		checkboxGroup = new FlxTypedGroup<CheckboxThingie>();
 		add(checkboxGroup);
-
-		descBox = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
-		descBox.alpha = 0.6;
-		add(descBox);
-
-		descText = new FlxText(50, 600, 1180, "", 32);
-		descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		descText.scrollFactor.set();
-		descText.borderSize = 2.4;
-		add(descText);
 		
 		getOptions();
 
@@ -209,23 +141,6 @@ class GameplayChangersSubState extends MusicBeatSubState
 
 		changeSelection();
 		reloadCheckboxes();
-
-		#if mobile
-		buttonUP = new Button(10, 130, 'UP');
-		add(buttonUP);
-		buttonDOWN = new Button(buttonUP.x, buttonUP.y + buttonUP.height + 10, 'DOWN');
-		add(buttonDOWN);
-		buttonLEFT = new Button(834, 564, 'LEFT');
-		add(buttonLEFT);
-		buttonRESET = new Button(984, buttonLEFT.y, 'RESET');
-		add(buttonRESET);
-		buttonRIGHT = new Button(buttonLEFT.x + 300, buttonLEFT.y, 'RIGHT');
-		add(buttonRIGHT);
-		buttonENTER = new Button(492, 564, 'ENTER');
-		add(buttonENTER);
-		buttonESC = new Button(buttonENTER.x + 136, buttonENTER.y, 'ESC');
-		add(buttonESC);
-		#end
 	}
 
 	var nextAccept:Int = 5;
@@ -233,32 +148,16 @@ class GameplayChangersSubState extends MusicBeatSubState
 	var holdValue:Float = 0;
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P || #if mobile buttonUP.justPressed #else FlxG.mouse.wheel > 0 #end)
+		if (controls.UI_UP_P || FlxG.mouse.wheel > 0)
 		{
 			changeSelection(-1);
-			holdTime = 0;
 		}
-		if (controls.UI_DOWN_P || #if mobile buttonDOWN.justPressed #else FlxG.mouse.wheel < 0 #end)
+		if (controls.UI_DOWN_P || FlxG.mouse.wheel < 0)
 		{
 			changeSelection(1);
-			holdTime = 0;
 		}
 
-		var down = controls.UI_DOWN #if mobile || buttonDOWN.pressed #end;
-		var up = controls.UI_UP #if mobile || buttonUP.pressed #end;
-		if (down || up)
-		{
-			var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
-			holdTime += elapsed;
-			var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
-
-			if (holdTime > 0.5 && checkNewHold - checkLastHold > 0)
-			{
-				changeSelection((checkNewHold - checkLastHold) * (up ? -1 : 1));
-			}
-		}
-
-		if (controls.BACK #if mobile || buttonESC.justPressed #end) {
+		if (controls.BACK) {
 			close();
 			ClientPrefs.saveSettings();
 			FlxG.sound.play(Paths.sound('cancelMenu'), 0.7);
@@ -274,16 +173,16 @@ class GameplayChangersSubState extends MusicBeatSubState
 
 			if (usesCheckbox)
 			{
-				if (controls.ACCEPT || #if mobile buttonENTER.justPressed #else FlxG.mouse.justPressed #end)
+				if (controls.ACCEPT || FlxG.mouse.justPressed)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 					curOption.setValue((curOption.getValue() == true) ? false : true);
 					curOption.change();
 					reloadCheckboxes();
 				}
-			} else if (!down && !up) {
-				if (controls.UI_LEFT || controls.UI_RIGHT #if mobile || buttonLEFT.pressed || buttonRIGHT.pressed #end || (FlxG.mouse.wheel != 0 && FlxG.keys.pressed.SHIFT)) {
-					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P #if mobile || buttonLEFT.pressed || buttonRIGHT.pressed #end );
+			} else {
+				if (controls.UI_LEFT || controls.UI_RIGHT || (FlxG.mouse.wheel != 0 && FlxG.keys.pressed.SHIFT)) {
+					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
 					var useWheel = FlxG.mouse.wheel != 0 && FlxG.keys.pressed.SHIFT;
 					if (holdTime > 0.5 || pressed || useWheel) {
 						if (pressed || useWheel) {
@@ -292,7 +191,7 @@ class GameplayChangersSubState extends MusicBeatSubState
 								if (useWheel) {
 									add = curOption.changeValue * Std.int(CoolUtil.boundTo(FlxG.mouse.wheel, -1, 1));
 								} else {
-									add = (controls.UI_LEFT #if mobile || buttonLEFT.pressed #end) ? -curOption.changeValue : curOption.changeValue;
+									add = controls.UI_LEFT ? -curOption.changeValue : curOption.changeValue;
 								}
 							}
 
@@ -317,7 +216,7 @@ class GameplayChangersSubState extends MusicBeatSubState
 								case 'string':
 									var num:Int = curOption.curOption; //lol
 									if (useWheel) num += Std.int(CoolUtil.boundTo(FlxG.mouse.wheel, -1, 1));
-									else if (controls.UI_LEFT_P #if mobile || buttonLEFT.justPressed #end) --num;
+									else if (controls.UI_LEFT_P) --num;
 									else num++;
 
 									if (num < 0) {
@@ -336,13 +235,11 @@ class GameplayChangersSubState extends MusicBeatSubState
 										{
 											if (curOption.getValue() == "constant")
 											{
-												oOption.description = 'Forces a single scroll speed for every chart.';
 												oOption.displayFormat = "%v";
 												oOption.maxValue = 6;
 											}
 											else
 											{
-												oOption.description = "Multiplies the chart's scroll speed.";
 												oOption.displayFormat = "%vX";
 												oOption.maxValue = 3;
 												if (oOption.getValue() > 3) oOption.setValue(3);
@@ -355,7 +252,7 @@ class GameplayChangersSubState extends MusicBeatSubState
 							curOption.change();
 							FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 						} else if (curOption.type != 'string') {
-							holdValue += curOption.scrollSpeed * elapsed * ((controls.UI_LEFT #if mobile || buttonLEFT.pressed #end) ? -1 : 1);
+							holdValue += curOption.scrollSpeed * elapsed * (controls.UI_LEFT ? -1 : 1);
 							if (holdValue < curOption.minValue) holdValue = curOption.minValue;
 							else if (holdValue > curOption.maxValue) holdValue = curOption.maxValue;
 
@@ -375,12 +272,12 @@ class GameplayChangersSubState extends MusicBeatSubState
 					if (curOption.type != 'string' && !useWheel) {
 						holdTime += elapsed;
 					}
-				} else if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || buttonLEFT.justReleased || buttonRIGHT.justReleased #end) {
+				} else if (controls.UI_LEFT_R || controls.UI_RIGHT_R) {
 					clearHold();
 				}
 			}
 
-			if (controls.RESET #if mobile || buttonRESET.justPressed #end)
+			if (controls.RESET)
 			{
 				for (i in 0...optionsArray.length)
 				{
@@ -442,10 +339,6 @@ class GameplayChangersSubState extends MusicBeatSubState
 		if (curSelected >= optionsArray.length)
 			curSelected = 0;
 
-		descText.text = optionsArray[curSelected].description;
-		descText.screenCenter(Y);
-		descText.y += 270;
-
 		var bullShit:Int = 0;
 
 		for (item in grpOptions.members) {
@@ -463,11 +356,6 @@ class GameplayChangersSubState extends MusicBeatSubState
 				text.alpha = 1;
 			}
 		}
-
-		descBox.setPosition(descText.x - 10, descText.y - 10);
-		descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
-		descBox.updateHitbox();
-
 		curOption = optionsArray[curSelected]; //shorter lol
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 	}
@@ -503,13 +391,11 @@ class GameplayOption
 	public var decimals:Int = 1; //Only used in float/percent type
 
 	public var displayFormat:String = '%v'; //How String/Float/Percent/Int values are shown, %v = Current value, %d = Default value
-	public var description:String = '';
 	public var name:String = 'Unknown';
 
-	public function new(name:String, description:String = '', variable:String, type:String = 'bool', defaultValue:Dynamic = 'null variable value', ?options:Array<String> = null)
+	public function new(name:String, variable:String, type:String = 'bool', defaultValue:Dynamic = 'null variable value', ?options:Array<String> = null)
 	{
 		this.name = name;
-		this.description = description;
 		this.variable = variable;
 		this.type = type;
 		this.defaultValue = defaultValue;

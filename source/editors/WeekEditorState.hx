@@ -440,9 +440,8 @@ class WeekEditorState extends MusicBeatState
 			FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
 			FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
 			if (FlxG.keys.justPressed.ESCAPE) {
-				WeekData.loadTheFirstEnabledMod();
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
-				CoolUtil.playMenuMusic();
+				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 		}
 
@@ -775,7 +774,6 @@ class WeekEditorFreeplayState extends MusicBeatState
 		updateBG();
 	}
 
-	var holdTime:Float = 0;
 	override function update(elapsed:Float) {
 		FlxG.mouse.visible = true;//cause reasons. trust me 
 		if (WeekEditorState.loadedWeek != null) {
@@ -829,32 +827,12 @@ class WeekEditorFreeplayState extends MusicBeatState
 			FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
 			FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
 			if (FlxG.keys.justPressed.ESCAPE) {
-				WeekData.loadTheFirstEnabledMod();
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
-				CoolUtil.playMenuMusic();
+				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 
-			if (controls.UI_UP_P || FlxG.mouse.wheel > 0) {
-				changeSelection(-1);
-				holdTime = 0;
-			}
-			if (controls.UI_DOWN_P || FlxG.mouse.wheel < 0) {
-				changeSelection(1);
-				holdTime = 0;
-			}
-			var down = controls.UI_DOWN;
-			var up = controls.UI_UP;
-			if (down || up)
-			{
-				var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
-				holdTime += elapsed;
-				var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
-
-				if (holdTime > 0.5 && checkNewHold - checkLastHold > 0)
-				{
-					changeSelection((checkNewHold - checkLastHold) * (up ? -1 : 1));
-				}
-			}
+			if (controls.UI_UP_P || FlxG.mouse.wheel > 0) changeSelection(-1);
+			if (controls.UI_DOWN_P || FlxG.mouse.wheel < 0) changeSelection(1);
 		}
 		super.update(elapsed);
 	}

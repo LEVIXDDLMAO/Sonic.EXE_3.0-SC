@@ -3,8 +3,6 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
-using StringTools;
-
 class NoteSplash extends FlxSprite
 {
 	public var colorSwap:ColorSwap = null;
@@ -29,12 +27,14 @@ class NoteSplash extends FlxSprite
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 
-	public function setupNoteSplash(x:Float = 0, y:Float = 0, note:Note = null, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, keyAmount:Int = 4) {
+	public function setupNoteSplash(x:Float = 0, y:Float = 0, note:Note = null, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, keyAmount:Int = 4, ?colors:Array<String>) {
 		if (note != null) {
 			daNote = note;
 			setGraphicSize(Std.int(note.width * 2.68), Std.int(note.height * 2.77));
 		}
-		colors = CoolUtil.coolArrayTextFile(Paths.txt('note_colors'))[keyAmount-1];
+		if (colors != null) {
+			this.colors = colors;
+		}
 		updateHitbox();
 		alphaMult = 0.6;
 
@@ -68,11 +68,15 @@ class NoteSplash extends FlxSprite
 
 	function loadAnims(skin:String) {
 		if (daNote == null) {
-			frames = Paths.getSparrowAtlas('noteskins/default/base/noteSplashes');
+			frames = Paths.getSparrowAtlas('noteSplashes');
 			animation.addByPrefix("note0-1", "note splash left 1", 24, false);
 		} else {
-			var image = SkinData.getNoteFile(skin, PlayState.SONG.skinModifier, ClientPrefs.noteSkin);
-			frames = Paths.getSparrowAtlas(image);
+			var uiSkin = daNote.uiSkin;
+			var blahblah = skin;
+			if (uiSkin.isPixel) {
+				blahblah = 'pixelUI/$skin';
+			}
+			frames = Paths.getSparrowAtlas(blahblah);
 			for (i in 1...3) {
 				animation.addByPrefix('note${daNote.noteData}-$i', 'note splash ${colors[daNote.noteData]} ${i}0', 24, false);
 			}
@@ -84,7 +88,7 @@ class NoteSplash extends FlxSprite
 					animation.addByPrefix('note3-$i', 'note splash red ${i}0', 24, false);
 				}
 			}
-			antialiasing = ClientPrefs.globalAntialiasing && !PlayState.SONG.skinModifier.endsWith('pixel');
+			antialiasing = ClientPrefs.globalAntialiasing && !uiSkin.noAntialiasing;
 		}
 	}
 

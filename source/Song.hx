@@ -1,6 +1,7 @@
 package;
 
 import haxe.Json;
+import Section;
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
@@ -29,39 +30,16 @@ typedef SwagSong =
 
 	var arrowSkin:String;
 	var splashSkin:String;
-	var skinModifier:String;
+	var uiSkin:String;
+	var uiSkinOpponent:String;
 
 	var validScore:Bool;
 }
 
-typedef SwagSection =
-{
-	var sectionNotes:Array<Array<Dynamic>>;
-	var lengthInSteps:Int;
-	var mustHitSection:Bool;
-	var ?gfSection:Bool;
-	var ?bpm:Float;
-	var ?changeBPM:Bool;
-	var timeSignature:Array<Int>;
-	var ?changeSignature:Bool;
-	var ?altAnim:Bool;
-	var ?changeKeys:Bool;
-	var ?playerKeys:Int;
-	var ?opponentKeys:Int;
-}
-
-typedef MetaFile = {
-	var ?displayName:String;
-	var freeplayDifficulties:String;
-	var ?iconHiddenUntilPlayed:Bool;
-}
-
 class Song
 {
-	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
+	private static function onLoadJson(songJson:SwagSong) // Convert old charts to newest format
 	{
-		var curSong:String = Paths.formatToSongPath(songJson.song);
-		
 		if (songJson.events == null)
 		{
 			songJson.events = [];
@@ -95,13 +73,13 @@ class Song
 		{
 			songJson.timeSignature = [4, 4];
 		}
-		if (songJson.skinModifier == null || songJson.skinModifier.length < 1) {
-			switch (curSong) {
-				case 'senpai' | 'roses' | 'thorns':
-					songJson.skinModifier = 'pixel'; //set to week 6 skin
-				default:
-					songJson.skinModifier = ''; //set to default
-			}
+		if (songJson.uiSkin == null)
+		{
+			songJson.uiSkin = '';
+		}
+		if (songJson.uiSkinOpponent == null)
+		{
+			songJson.uiSkinOpponent = songJson.uiSkin;
 		}
 		
 		for (secNum in 0...songJson.notes.length) {
@@ -109,10 +87,7 @@ class Song
 			if (sec.gfSection == null) sec.gfSection = false;
 			if (sec.bpm == null) sec.bpm = songJson.bpm;
 			if (sec.changeBPM == null) sec.changeBPM = false;
-			if (sec.timeSignature == null) {
-				var timeSignature:Array<Int> = songJson.timeSignature;
-				sec.timeSignature = timeSignature.copy(); //haxe why are you so WEEEEEEEIIIIIIRD
-			}
+			if (sec.timeSignature == null) sec.timeSignature = songJson.timeSignature;
 			if (sec.changeSignature == null) sec.changeSignature = false;
 			if (sec.altAnim == null) sec.altAnim = false;
 			if (sec.changeKeys == null) sec.changeKeys = false;
@@ -123,12 +98,12 @@ class Song
 			var len:Int = notes.length;
 			while(i < len)
 			{
+				//i dont even know if this does anything
 				var note = notes[i];
-				while (note.length < 5) {
+				while (note.length < 4) {
 					note.push(null);
 				}
 				if (note[3] != null && Std.isOfType(note[3], Int)) note[3] = editors.ChartingState.noteTypeList[note[3]];
-				if (note[3] != null && note[3] == true) note[3] = 'Alt Animation';
 				if (note[3] == null) note[3] = '';
 				if (note[4] == null || note[4].length < 1) note[4] = [0];
 				notes[i] = [note[0], note[1], note[2], note[3], note[4]];
@@ -159,18 +134,14 @@ class Song
 			#end
 		}
 
-		if (rawJson == null) {
-			return null;
-		}
-
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
-		var songJson:Dynamic = parseJSONshit(rawJson);
-		if (formattedSong != 'events' && formattedSong != 'picospeaker') StageData.loadDirectory(songJson);
+		var songJson:SwagSong = parseJSONshit(rawJson);
+		if (formattedSong != 'events') StageData.loadDirectory(songJson);
 		onLoadJson(songJson);
 		return songJson;
 	}
@@ -188,9 +159,10 @@ class Song
 				swagShit.gfVersion = tempSong.gf;
 			}
 		}
-		if (swagShit.skinModifier == null) {
+		if (swagShit.uiSkin == null) {
 			if (tempSong.ui_Skin != null) {
-				swagShit.skinModifier = tempSong.ui_Skin;
+				swagShit.uiSkin = tempSong.ui_Skin;
+				swagShit.uiSkinOpponent = tempSong.ui_Skin;
 			}
 		}
 		if (swagShit.playerKeyAmount == null) {
@@ -220,8 +192,7 @@ class Song
 				swagShit.timeSignature = [tempSong.numerator, tempSong.denominator];
 			}
 			if (tempSong.timescale != null && tempSong.timescale.length == 2) {
-				var timescale:Array<Int> = tempSong.timescale;
-				swagShit.timeSignature = timescale.copy();
+				swagShit.timeSignature = tempSong.timescale;
 			}
 		}
 
@@ -229,60 +200,12 @@ class Song
 			var sec = tempSong.notes[i];
 			var numerator:Null<Int> = sec.numerator;
 			var denominator:Null<Int> = sec.denominator;
-			var sectionBeats:Null<Float> = sec.sectionBeats;
 			if (numerator != null && denominator != null) {
 				swagShit.notes[i].timeSignature = [numerator, denominator];
-			}
-			if (sectionBeats != null) {
-				swagShit.notes[i].timeSignature[0] = Math.round(sectionBeats);
-				swagShit.notes[i].changeSignature = true;
 			}
 		}
 
 		swagShit.validScore = true;
 		return swagShit;
-	}
-
-	public static function getMetaFile(name:String):MetaFile {
-		name = Paths.formatToSongPath(name);
-		var characterPath:String = 'data/$name/meta.json';
-		#if MODS_ALLOWED
-		var path:String = Paths.modFolders(characterPath);
-		if (!FileSystem.exists(path)) {
-			path = Paths.getPreloadPath(characterPath);
-		}
-
-		if (!FileSystem.exists(path))
-		#else
-		var path:String = Paths.getPreloadPath(characterPath);
-		if (!Assets.exists(path))
-		#end
-		{
-			var meta:MetaFile = {
-				displayName: null,
-				freeplayDifficulties: null,
-				iconHiddenUntilPlayed: false
-			};
-			return meta;
-		}
-
-		#if MODS_ALLOWED
-		var rawJson = File.getContent(path);
-		#else
-		var rawJson = Assets.getText(path);
-		#end
-
-		if (rawJson == null) {
-			return null;
-		}
-
-		var json:MetaFile = cast Json.parse(rawJson);
-		if (json.iconHiddenUntilPlayed == null) json.iconHiddenUntilPlayed = true;
-		return json;
-	}
-
-	public static function getDisplayName(song:String) {
-		var meta = Song.getMetaFile(song);
-		return meta.displayName != null ? meta.displayName : song;
 	}
 }
