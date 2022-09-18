@@ -299,6 +299,8 @@ class PlayState extends MusicBeatState
 
 	var daNoteStatic:FlxSprite = new FlxSprite(0, 0);
 
+	var heatlhDrop:Float = 0;
+
 	public function new(?inEditor:Bool = false, ?startPos:Float = 0) {
 		this.inEditor = inEditor;
 		if (inEditor) {
@@ -5283,6 +5285,27 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
 			}
+
+			if (note.noteType == 'Phantom Note')
+			{
+				var fuckyou:Int = 0;
+				heatlhDrop += 0.00025;
+				if (heatlhDrop == 0.00025)
+				{
+					new FlxTimer().start(0.1, function(sex:FlxTimer)
+					{
+						fuckyou += 1;
+
+						if (fuckyou >= 100)
+							heatlhDrop = 0;
+
+						if (!paused && fuckyou < 100)
+							sex.reset();
+					});
+				}
+				else
+					fuckyou = 0;
+			}			
 
 			if (opponentChart && curSong != 'tutorial') {
 				camZooming = true;
