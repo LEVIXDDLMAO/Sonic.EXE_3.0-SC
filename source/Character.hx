@@ -1,15 +1,14 @@
 package;
 
+import animateatlas.AtlasFrameMaker;
 import flixel.FlxSprite;
-import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxTween;
-import haxe.Json;
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
-#else
-import openfl.utils.Assets;
 #end
+import openfl.utils.Assets;
+import haxe.Json;
 
 using StringTools;
 
@@ -34,18 +33,18 @@ typedef AnimArray = {
 	var fps:Int;
 	var loop:Bool;
 	var indices:Array<Int>;
-	var offsets:Array<Float>;
+	var offsets:Array<Int>;
 }
 
 typedef CharacterGroupFile = {
-	var characters:Array<GroupCharacter>;
+	var characters:Array<CharArray>;
 	var position:Array<Float>;
 	var healthicon:String;
 	var camera_position:Array<Float>;
 	var healthbar_colors:Array<Int>;
 }
 
-typedef GroupCharacter = {
+typedef CharArray = {
 	var name:String;
 	var position:Array<Float>;
 }
@@ -66,8 +65,7 @@ class Character extends FlxSprite
 	public var singDuration:Float = 4; //Multiplier of how long a character holds the sing pose
 	public var idleSuffix:String = '';
 	public var danceIdle:Bool = false; //Character use "danceLeft" and "danceRight" instead of "idle"
-	public var danceEveryNumBeats:Float = 2;
-	public var keysPressed:Array<FlxKey> = [];
+	public var danceSpeed:Int = 2;
 
 	public var healthIcon:String = 'face';
 	public var animationsArray:Array<AnimArray> = [];
@@ -103,21 +101,49 @@ class Character extends FlxSprite
 			default:
 				var json:CharacterFile = getFile(curCharacter);
 
-				if (Paths.fileExists('images/${json.image}.txt', TEXT))
+				var spriteType = "sparrow";
+				#if MODS_ALLOWED
+				var modTxtToFind:String = Paths.modsTxt(json.image);
+				var txtToFind:String = Paths.getPath('images/${json.image}.txt', TEXT);
+				
+				if (FileSystem.exists(modTxtToFind) || Assets.exists(txtToFind))
+				#else
+				if (Assets.exists(Paths.getPath('images/${json.image}.txt', TEXT)))
+				#end
 				{
-					frames = Paths.getPackerAtlas(json.image);
+					spriteType = "packer";
 				}
-				else if (Paths.fileExists('images/${json.image}.json', TEXT))
+				#if MODS_ALLOWED
+				var modJsonToFind:String = Paths.modsJson(json.image);
+				var jsonToFind:String = Paths.getPath('images/${json.image}.json', TEXT);
+				
+				if (FileSystem.exists(modJsonToFind) || Assets.exists(jsonToFind))
+				#else
+				if (Assets.exists(Paths.getPath('images/${json.image}.json', TEXT)))
+				#end
 				{
-					frames = Paths.getTexturePackerAtlas(json.image);
+					spriteType = "texpacker";
 				}
-				else if (Paths.fileExists('images/${json.image}/Animation.json', TEXT))
+				#if MODS_ALLOWED
+				var modAnimToFind:String = Paths.modsJson('${json.image}/Animation');
+				var animToFind:String = Paths.getPath('images/${json.image}/Animation.json', TEXT);
+				
+				if (FileSystem.exists(modAnimToFind) || Assets.exists(animToFind))
+				#else
+				if (Assets.exists(Paths.getPath('images/${json.image}/Animation.json', TEXT)))
+				#end
 				{
-					frames = AtlasFrameMaker.construct(json.image);	
+					spriteType = "texture";
 				}
-				else
-				{
-					frames = Paths.getSparrowAtlas(json.image);
+				switch (spriteType) {
+					case "packer":
+						frames = Paths.getPackerAtlas(json.image);
+					case "sparrow":
+						frames = Paths.getSparrowAtlas(json.image);
+					case "texture":
+						frames = AtlasFrameMaker.construct(json.image);	
+					case "texpacker":
+						frames = Paths.getTexturePackerAtlas(json.image);
 				}
 				
 				imageFile = json.image;
@@ -207,14 +233,14 @@ class Character extends FlxSprite
 				if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished)
 				{
 					dance();
-					playAnim(animation.curAnim.name, true, false, animation.curAnim.numFrames - 1);
+					playAnim(animation.curAnim.name, true, false, 10);
 				}
 			} else {
 				if (animation.curAnim.name.startsWith('sing')) {
 					holdTimer += elapsed;
 				}
 
-				if (holdTimer >= Conductor.stepCrochet * 0.001 * singDuration * (Conductor.timeSignature[1] / 4)) {
+				if (holdTimer >= Conductor.stepCrochet * 0.001 * singDuration * (Conductor.denominator / 4)) {
 					dance();
 					holdTimer = 0;
 				}
@@ -289,18 +315,18 @@ class Character extends FlxSprite
 		danceIdle = (animation.getByName('danceLeft$idleSuffix') != null && animation.getByName('danceRight$idleSuffix') != null);
 		if(settingCharacterUp)
 		{
-			danceEveryNumBeats = (danceIdle ? 1 : 2);
+			danceSpeed = (danceIdle ? 1 : 2);
 			settingCharacterUp = false;
 		}
 		else if(lastDanceIdle != danceIdle)
 		{
-			var calc:Float = danceEveryNumBeats;
+			var calc:Float = danceSpeed;
 			if(danceIdle)
 				calc /= 2;
 			else
 				calc *= 2;
 
-			danceEveryNumBeats = Math.round(Math.max(calc, 1));
+			danceSpeed = Math.round(Math.max(calc, 1));
 		}
 	}
 
@@ -341,7 +367,8 @@ class Character extends FlxSprite
 			return null;
 		}
 
-		var json = cast Json.parse(rawJson);
+		var json:Dynamic = cast Json.parse(rawJson);
+
 		return json;
 	}
 }

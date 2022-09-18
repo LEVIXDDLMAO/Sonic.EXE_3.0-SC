@@ -4,15 +4,14 @@ import flixel.FlxSprite;
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
-#else
-import openfl.utils.Assets;
 #end
+import openfl.utils.Assets;
 import haxe.Json;
 
 typedef MenuCharacterFile = {
 	var image:String;
 	var scale:Float;
-	var position:Array<Float>;
+	var position:Array<Int>;
 	var idle_anim:String;
 	var confirm_anim:String;
 	var flipX:Bool;
@@ -74,12 +73,7 @@ class MenuCharacter extends FlxSprite
 				
 				charFile = cast Json.parse(rawJson);
 
-				var imagePath = 'menucharacters/${charFile.image}';
-				if (Paths.fileExists('images/$imagePath/Animation.json', TEXT)) {
-					frames = AtlasFrameMaker.construct(imagePath);
-				} else {
-					frames = Paths.getSparrowAtlas(imagePath);
-				}
+				frames = Paths.getSparrowAtlas('menucharacters/${charFile.image}');
 				animation.addByPrefix('idle', charFile.idle_anim, 24);
 				
 				var confirmAnim:String = charFile.confirm_anim;

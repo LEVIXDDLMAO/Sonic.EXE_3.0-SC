@@ -15,10 +15,11 @@ using StringTools;
 class AchievementsMenuState extends MusicBeatState
 {
 	#if ACHIEVEMENTS_ALLOWED
-	var options:Array<AchievementFile> = [];
+	var options:Array<String> = [];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	private var achievementArray:Array<AttachedAchievement> = [];
+	private var achievementIndex:Array<Int> = [];
 	private var descText:FlxText;
 
 	override function create() {
@@ -38,14 +39,15 @@ class AchievementsMenuState extends MusicBeatState
 		
 		Achievements.loadAchievements();
 		for (i in 0...Achievements.achievementsStuff.length) {
-			if (!Achievements.achievementsStuff[i].hiddenUntilUnlocked || Achievements.achievementsMap.exists(Achievements.achievementsStuff[i].name)) {
+			if (!Achievements.achievementsStuff[i][4] || Achievements.achievementsMap.exists(Achievements.achievementsStuff[i][2])) {
 				options.push(Achievements.achievementsStuff[i]);
+				achievementIndex.push(i);
 			}
 		}
 
 		for (i in 0...options.length) {
-			var achieveName:String = options[i].name;
-			var optionText:Alphabet = new Alphabet(0, (100 * i) + 210, Achievements.isAchievementUnlocked(achieveName) ? options[i].displayName : '?');
+			var achieveName:String = Achievements.achievementsStuff[achievementIndex[i]][2];
+			var optionText:Alphabet = new Alphabet(0, (100 * i) + 210, Achievements.isAchievementUnlocked(achieveName) ? Achievements.achievementsStuff[achievementIndex[i]][0] : '?', false, false);
 			optionText.isMenuItem = true;
 			optionText.x += 280;
 			optionText.xAdd = 200;
@@ -79,7 +81,7 @@ class AchievementsMenuState extends MusicBeatState
 		}
 
 		if (controls.BACK) {
-			FlxG.sound.play(Paths.sound('cancelMenu'), 0.7);
+			FlxG.sound.play(Paths.sound('cancelMenu'));
 			MusicBeatState.switchState(new MainMenuState());
 		}
 	}
@@ -109,7 +111,7 @@ class AchievementsMenuState extends MusicBeatState
 				achievementArray[i].alpha = 1;
 			}
 		}
-		descText.text = options[curSelected].description;
+		descText.text = Achievements.achievementsStuff[achievementIndex[curSelected]][1];
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 	}
 	#end

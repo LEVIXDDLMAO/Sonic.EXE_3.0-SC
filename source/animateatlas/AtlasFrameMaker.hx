@@ -1,27 +1,21 @@
 package animateatlas;
 
-import animateatlas.JSONData.AnimationData;
-import animateatlas.JSONData.AtlasData;
-import animateatlas.displayobject.SpriteAnimationLibrary;
-import animateatlas.displayobject.SpriteMovieClip;
-import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxFrame;
-import flixel.graphics.frames.FlxFramesCollection;
+import openfl.geom.Rectangle;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import haxe.Json;
 import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
-#if MODS_ALLOWED
-import sys.FileSystem;
-#end
+import animateatlas.JSONData.AtlasData;
+import animateatlas.JSONData.AnimationData;
+import animateatlas.displayobject.SpriteAnimationLibrary;
+import animateatlas.displayobject.SpriteMovieClip;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxFramesCollection;
+import flixel.graphics.frames.FlxFrame;
 
 using StringTools;
-
 class AtlasFrameMaker extends FlxFramesCollection
 {
-	static var framesLoaded:Map<String, FlxFramesCollection> = new Map(); //cache frame collections cause they take a million years to create
-
 	/**
 
 	* Creates Frames from TextureAtlas(very early and broken ok) Originally made for FNF HD by Smokey and Rozebud
@@ -41,16 +35,6 @@ class AtlasFrameMaker extends FlxFramesCollection
 			PlayState.instance.addTextToDebug('$key: Only Spritemaps made with Adobe Animate 2018 are supported');
 			trace('$key: Only Spritemaps made with Adobe Animate 2018 are supported');
 			return null;
-		}
-
-		var usedPath:String = Paths.getPath('images/$key/spritemap.png', IMAGE);
-		#if MODS_ALLOWED
-		if (FileSystem.exists(Paths.modsImages('$key/spritemap'))) {
-			usedPath = Paths.modsImages('$key/spritemap');
-		}
-		#end
-		if (framesLoaded.exists(usedPath)) {
-			return framesLoaded.get(usedPath);
 		}
 
 		var animationData:AnimationData = Json.parse(Paths.getTextFromFile('images/$key/Animation.json'));
@@ -78,7 +62,6 @@ class AtlasFrameMaker extends FlxFramesCollection
 				frameCollection.pushFrame(y);
 			}
 		}
-		framesLoaded.set(usedPath, frameCollection);
 		return frameCollection;
 	}
 
@@ -121,9 +104,5 @@ class AtlasFrameMaker extends FlxFramesCollection
 			daFramez.push(theFrame);
 		}
 		return daFramez;
-	}
-
-	public static function clearCache() { //clear loaded frames cause they might've changed
-		framesLoaded.clear();
 	}
 }

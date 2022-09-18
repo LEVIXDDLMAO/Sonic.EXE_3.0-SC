@@ -1,31 +1,30 @@
 package;
 
-import haxe.Json;
-import haxe.io.Path;
 #if MODS_ALLOWED
-import sys.FileSystem;
 import sys.io.File;
-#else
+import sys.FileSystem;
+#end
 import lime.utils.Assets;
 import openfl.utils.Assets as OpenFlAssets;
-#end
+import haxe.Json;
+import haxe.io.Path;
 
 using StringTools;
 
 typedef WeekFile =
 {
 	// JSON variables
-	var songs:Array<Array<Dynamic>>;
+	var songs:Array<Dynamic>;
 	var weekCharacters:Array<String>;
 	var weekBackground:String;
 	var weekBefore:String;
 	var storyName:String;
 	var weekName:String;
+	var freeplayColor:Array<Int>;
 	var startUnlocked:Bool;
-	var ?hiddenUntilUnlocked:Bool;
 	var hideStoryMode:Bool;
 	var hideFreeplay:Bool;
-	var ?difficulties:String;
+	var difficulties:String;
 }
 
 class WeekData {
@@ -34,19 +33,17 @@ class WeekData {
 	public var folder:String = '';
 	
 	// JSON variables
-	public var songs:Array<Array<Dynamic>>;
+	public var songs:Array<Dynamic>;
 	public var weekCharacters:Array<String>;
 	public var weekBackground:String;
 	public var weekBefore:String;
 	public var storyName:String;
 	public var weekName:String;
+	public var freeplayColor:Array<Int>;
 	public var startUnlocked:Bool;
-	public var hiddenUntilUnlocked:Null<Bool>;
 	public var hideStoryMode:Bool;
 	public var hideFreeplay:Bool;
 	public var difficulties:String;
-
-	public var fileName:String;
 
 	public static function createWeekFile():WeekFile {
 		var weekFile:WeekFile = {
@@ -56,8 +53,8 @@ class WeekData {
 			weekBefore: 'tutorial',
 			storyName: 'Your New Week',
 			weekName: 'Custom Week',
+			freeplayColor: [146, 113, 253],
 			startUnlocked: true,
-			hiddenUntilUnlocked: false,
 			hideStoryMode: false,
 			hideFreeplay: false,
 			difficulties: ''
@@ -65,22 +62,22 @@ class WeekData {
 		return weekFile;
 	}
 
-	public function new(weekFile:WeekFile, fileName:String) {
-		var template = createWeekFile();
-		for (i in Reflect.fields(weekFile)) {
-			if (Reflect.hasField(template, i)) { //just doing Reflect.hasField on itself doesnt work for some reason so we are doing it on a template
-				Reflect.setProperty(this, i, Reflect.field(weekFile, i));
-			}
-		}
-
-		if (hiddenUntilUnlocked == null) {
-			hiddenUntilUnlocked = false;
-		}
-
-		this.fileName = fileName;
+	// HELP: Is there any way to convert a WeekFile to WeekData without having to put all variables there manually? I'm kind of a noob in haxe lmao
+	public function new(weekFile:WeekFile) {
+		songs = weekFile.songs;
+		weekCharacters = weekFile.weekCharacters;
+		weekBackground = weekFile.weekBackground;
+		weekBefore = weekFile.weekBefore;
+		storyName = weekFile.storyName;
+		weekName = weekFile.weekName;
+		freeplayColor = weekFile.freeplayColor;
+		startUnlocked = weekFile.startUnlocked;
+		hideStoryMode = weekFile.hideStoryMode;
+		hideFreeplay = weekFile.hideFreeplay;
+		difficulties = weekFile.difficulties;
 	}
 
-	public static function reloadWeekFiles(?isStoryMode:Bool = false)
+	public static function reloadWeekFiles(isStoryMode:Null<Bool> = false)
 	{
 		weeksList = [];
 		weeksLoaded.clear();
@@ -88,7 +85,6 @@ class WeekData {
 		var disabledMods:Array<String> = [];
 		var modsListPath:String = 'modsList.txt';
 		var directories:Array<String> = [Paths.mods(), Paths.getPreloadPath()];
-		var modNames:Array<String> = ['', ''];
 		var originalLength:Int = directories.length;
 		if (FileSystem.exists(modsListPath))
 		{
@@ -106,7 +102,6 @@ class WeekData {
 					if (FileSystem.isDirectory(path) && !Paths.ignoreModFolders.contains(splitName[0]) && !disabledMods.contains(splitName[0]) && !directories.contains('$path/'))
 					{
 						directories.push('$path/');
-						modNames.push(splitName[0]);
 					}
 				}
 			}
@@ -119,12 +114,10 @@ class WeekData {
 			if (!disabledMods.contains(folder) && !directories.contains(pathThing))
 			{
 				directories.push(pathThing);
-				modNames.push(folder);
 			}
 		}
 		#else
 		var directories:Array<String> = [Paths.getPreloadPath()];
-		var modNames:Array<String> = [''];
 		var originalLength:Int = directories.length;
 		#end
 
@@ -132,21 +125,20 @@ class WeekData {
 		for (i in 0...sexList.length) {
 			for (j in 0...directories.length) {
 				var fileToCheck:String = '${directories[j]}weeks/${sexList[i]}.json';
-				var weekName = WeekData.formatWeek(sexList[i], modNames[j]);
-				if (!weeksLoaded.exists(weekName)) {
+				if (!weeksLoaded.exists(sexList[i])) {
 					var week:WeekFile = getWeekFile(fileToCheck);
 					if (week != null) {
-						var weekFile:WeekData = new WeekData(week, sexList[i]);
+						var weekFile:WeekData = new WeekData(week);
 
 						#if MODS_ALLOWED
 						if (j >= originalLength) {
-							weekFile.folder = directories[j].substring(Paths.mods().length, directories[j].length - 1);
+							weekFile.folder = directories[j].substring(Paths.mods().length, directories[j].length-1);
 						}
 						#end
 
 						if (weekFile != null && (isStoryMode == null || (isStoryMode && !weekFile.hideStoryMode) || (!isStoryMode && !weekFile.hideFreeplay))) {
-							weeksLoaded.set(weekName, weekFile);
-							weeksList.push(weekName);
+							weeksLoaded.set(sexList[i], weekFile);
+							weeksList.push(sexList[i]);
 						}
 					}
 				}
@@ -163,7 +155,7 @@ class WeekData {
 					var path:String = '${directory}${daWeek}.json';
 					if (FileSystem.exists(path))
 					{
-						addWeek(daWeek, path, directories[i], i, originalLength, modNames[i]);
+						addWeek(daWeek, path, directories[i], i, originalLength);
 					}
 				}
 
@@ -172,7 +164,7 @@ class WeekData {
 					var path = Path.join([directory, file]);
 					if (!FileSystem.isDirectory(path) && file.endsWith('.json'))
 					{
-						addWeek(file.substr(0, file.length - 5), path, directories[i], i, originalLength, modNames[i]);
+						addWeek(file.substr(0, file.length - 5), path, directories[i], i, originalLength);
 					}
 				}
 			}
@@ -180,25 +172,24 @@ class WeekData {
 		#end
 	}
 
-	private static function addWeek(weekToCheck:String, path:String, directory:String, i:Int, originalLength:Int, modName:String = '')
+	private static function addWeek(weekToCheck:String, path:String, directory:String, i:Int, originalLength:Int)
 	{
-		var modAndWeek = WeekData.formatWeek(weekToCheck, modName);
-		if (!weeksLoaded.exists(modAndWeek))
+		if (!weeksLoaded.exists(weekToCheck))
 		{
 			var week:WeekFile = getWeekFile(path);
 			if (week != null)
 			{
-				var weekFile:WeekData = new WeekData(week, weekToCheck);
+				var weekFile:WeekData = new WeekData(week);
 				if (i >= originalLength)
 				{
 					#if MODS_ALLOWED
-					weekFile.folder = directory.substring(Paths.mods().length, directory.length - 1);
+					weekFile.folder = directory.substring(Paths.mods().length, directory.length-1);
 					#end
 				}
 				if ((PlayState.isStoryMode && !weekFile.hideStoryMode) || (!PlayState.isStoryMode && !weekFile.hideFreeplay))
 				{
-					weeksLoaded.set(modAndWeek, weekFile);
-					weeksList.push(modAndWeek);
+					weeksLoaded.set(weekToCheck, weekFile);
+					weeksList.push(weekToCheck);
 				}
 			}
 		}
@@ -224,13 +215,8 @@ class WeekData {
 
 	//   FUNCTIONS YOU WILL PROBABLY NEVER NEED TO USE
 
-	//returns raw week file name, no mod directory included
+	//To use on PlayState.hx or Highscore stuff
 	public static function getWeekFileName():String {
-		return weeksLoaded.get(weeksList[PlayState.storyWeek]).fileName;
-	}
-
-	//returns week file name with mod directory included
-	public static function getWeekName():String {
 		return weeksList[PlayState.storyWeek];
 	}
 
@@ -245,11 +231,6 @@ class WeekData {
 		}
 	}
 
-	public static function formatWeek(week:String, ?directory:String):String {
-		if (directory == null) directory = Paths.currentModDirectory;
-		return ((directory.length > 0) ? '${directory}:' : '') + week;
-	}
-
 	public static function loadTheFirstEnabledMod()
 	{
 		Paths.currentModDirectory = '';
@@ -257,7 +238,7 @@ class WeekData {
 		#if MODS_ALLOWED
 		if (FileSystem.exists("modsList.txt"))
 		{
-			var list:Array<String> = CoolUtil.coolTextFile("modsList.txt");
+			var list:Array<String> = CoolUtil.listFromString(File.getContent("modsList.txt"));
 			for (i in list)
 			{
 				var dat = i.split("|");

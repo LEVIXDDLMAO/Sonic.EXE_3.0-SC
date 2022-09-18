@@ -40,8 +40,6 @@ jobs:
           haxelib run lime setup
           haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-          haxelib git hscript https://github.com/HaxeFoundation/hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
@@ -74,8 +72,6 @@ jobs:
           haxelib run lime setup
           haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-          haxelib git hscript https://github.com/HaxeFoundation/hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
         shell: cmd
       - name: Create Version Tag
@@ -109,8 +105,6 @@ jobs:
           haxelib run lime setup
           haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-          haxelib git hscript https://github.com/HaxeFoundation/hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
         shell: cmd
       - name: Create Version Tag
@@ -144,8 +138,6 @@ jobs:
           haxelib run lime setup
           haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-          haxelib git hscript https://github.com/HaxeFoundation/hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
@@ -176,8 +168,6 @@ jobs:
           haxelib --never install flixel
           haxelib run lime setup flixel
           haxelib run lime setup
-          haxelib git hscript https://github.com/HaxeFoundation/hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
         shell: cmd
       - name: Create Version Tag

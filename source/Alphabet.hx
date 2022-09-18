@@ -6,7 +6,6 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
-import flash.media.Sound;
 
 using StringTools;
 
@@ -190,14 +189,7 @@ class Alphabet extends FlxSpriteGroup
 	var xPos:Float = 0;
 	public var curRow:Int = 0;
 	var dialogueSound:FlxSound = null;
-	private static var soundDialog:Sound = null;
 	var consecutiveSpaces:Int = 0;
-	public static function setDialogueSound(name:String = '')
-	{
-		if (name == null || name.trim() == '') name = 'dialogue';
-		soundDialog = Paths.sound(name);
-		if(soundDialog == null) soundDialog = Paths.sound('dialogue');
-	}
 
 	var typeTimer:FlxTimer = null;
 	public function startTypedText(speed:Float):Void
@@ -205,17 +197,12 @@ class Alphabet extends FlxSpriteGroup
 		_finalText = text;
 		doSplitWords();
 
-		if(soundDialog == null)
-		{
-			Alphabet.setDialogueSound();
-		}
-
 		if (speed <= 0) {
 			while(!finishedText) { 
 				timerCheck();
 			}
 			if (dialogueSound != null) dialogueSound.stop();
-			dialogueSound = FlxG.sound.play(soundDialog);
+			dialogueSound = FlxG.sound.play(Paths.sound('dialogue'));
 		} else {
 			typeTimer = new FlxTimer().start(0.1, function(tmr:FlxTimer) {
 				typeTimer = new FlxTimer().start(speed, function(tmr:FlxTimer) {
@@ -310,7 +297,7 @@ class Alphabet extends FlxSpriteGroup
 
 				if (tmr != null) {
 					if (dialogueSound != null) dialogueSound.stop();
-					dialogueSound = FlxG.sound.play(soundDialog);
+					dialogueSound = FlxG.sound.play(Paths.sound('dialogue'));
 				}
 
 				add(letter);

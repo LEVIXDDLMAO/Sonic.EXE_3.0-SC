@@ -1,1 +1,1 @@
-Put your custom charts and song scripts here
+Put your custom charts here

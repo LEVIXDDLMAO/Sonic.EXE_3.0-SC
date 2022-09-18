@@ -16,7 +16,6 @@ using StringTools;
 typedef DialogueCharacterFile = {
 	var image:String;
 	var dialogue_pos:String;
-	var ?no_antialiasing:Bool;
 
 	var animations:Array<DialogueAnimArray>;
 	var position:Array<Float>;
@@ -26,9 +25,9 @@ typedef DialogueCharacterFile = {
 typedef DialogueAnimArray = {
 	var anim:String;
 	var loop_name:String;
-	var loop_offsets:Array<Float>;
+	var loop_offsets:Array<Int>;
 	var idle_name:String;
-	var idle_offsets:Array<Float>;
+	var idle_offsets:Array<Int>;
 }
 
 // Gonna try to kind of make it compatible to Forever Engine,
@@ -38,12 +37,11 @@ typedef DialogueFile = {
 }
 
 typedef DialogueLine = {
-	var portrait:String;
-	var expression:String;
-	var text:String;
-	var boxState:String;
-	var ?speed:Float;
-	var sound:String;
+	var portrait:Null<String>;
+	var expression:Null<String>;
+	var text:Null<String>;
+	var boxState:Null<String>;
+	var speed:Null<Float>;
 }
 
 class DialogueCharacter extends FlxSprite
@@ -61,6 +59,8 @@ class DialogueCharacter extends FlxSprite
 	public var skiptimer = 0;
 	public var skipping = 0;
 
+	static var characterMap:Map<String, DialogueCharacterFile> = new Map();
+
 	public function new(x:Float = 0, y:Float = 0, character:String = null)
 	{
 		super(x, y);
@@ -69,15 +69,8 @@ class DialogueCharacter extends FlxSprite
 		this.curCharacter = character;
 
 		reloadCharacterJson(character);
-		var imagePath = 'dialogue/${jsonFile.image}';
-		if (Paths.fileExists('images/$imagePath/Animation.json', TEXT)) {
-			frames = AtlasFrameMaker.construct(imagePath);
-		} else {
-			frames = Paths.getSparrowAtlas(imagePath);
-		}
+		frames = Paths.getSparrowAtlas('dialogue/${jsonFile.image}');
 		reloadAnimations();
-
-		antialiasing = ClientPrefs.globalAntialiasing && (jsonFile.no_antialiasing == false);
 	}
 
 	public function reloadCharacterJson(character:String) {
@@ -101,7 +94,6 @@ class DialogueCharacter extends FlxSprite
 		#end
 		
 		jsonFile = cast Json.parse(rawJson);
-		if (jsonFile.no_antialiasing == null) jsonFile.no_antialiasing = false;
 	}
 
 	public function reloadAnimations() {
@@ -240,6 +232,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 
 			char.setGraphicSize(Std.int(char.width * DialogueCharacter.DEFAULT_SCALE * char.jsonFile.scale));
 			char.updateHitbox();
+			char.antialiasing = ClientPrefs.globalAntialiasing;
 			char.scrollFactor.set();
 			char.alpha = 0.00001;
 			add(char);
@@ -483,7 +476,6 @@ class DialogueBoxPsych extends FlxSpriteGroup
 		}
 
 		textToType = curDialogue.text;
-		Alphabet.setDialogueSound(curDialogue.sound);
 		daText = new Alphabet(DEFAULT_TEXT_X, DEFAULT_TEXT_Y, textToType, false, true, curDialogue.speed, 0.7);
 		add(daText);
 

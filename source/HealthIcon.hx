@@ -1,6 +1,5 @@
 package;
 
-import editors.CharacterEditorState;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
@@ -45,8 +44,7 @@ class HealthIcon extends FlxSprite
 			}
 			if (!Paths.fileExists('images/$name.png', IMAGE)) {
 				name = 'icons/icon-face'; //Prevents crash from missing icon
-				if (!CharacterEditorState.inEditor)
-					FlxG.log.warn('Couldn\'t find icon file for $char!');
+				FlxG.log.warn('Couldn\'t find icon file for $char!');
 			}
 			var file = Paths.image(name);
 

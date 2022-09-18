@@ -2,16 +2,17 @@ package;
 
 typedef SwagSection =
 {
-	var sectionNotes:Array<Array<Dynamic>>;
+	var sectionNotes:Array<Dynamic>;
 	var lengthInSteps:Int;
 	var mustHitSection:Bool;
-	var ?gfSection:Bool;
-	var ?bpm:Float;
-	var ?changeBPM:Bool;
-	var timeSignature:Array<Int>;
-	var ?changeSignature:Bool;
-	var ?altAnim:Bool;
-	var ?changeKeys:Bool;
-	var ?playerKeys:Int;
-	var ?opponentKeys:Int;
+	var gfSection:Null<Bool>;
+	var bpm:Null<Float>;
+	var changeBPM:Null<Bool>;
+	var numerator:Null<Int>;
+	var denominator:Null<Int>;
+	var changeSignature:Null<Bool>;
+	var altAnim:Null<Bool>;
+	var changeKeys:Null<Bool>;
+	var playerKeys:Null<Int>;
+	var opponentKeys:Null<Int>;
 }

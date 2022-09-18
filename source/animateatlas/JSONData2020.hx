@@ -7,7 +7,7 @@ typedef AnimationData = {
 		Symbols:Array<SymbolData>
 	},
 	?metadata:{
-		?framerate:Int
+		?framerate:Null<Int>
 	}
 }
 

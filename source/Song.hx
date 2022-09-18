@@ -1,7 +1,7 @@
 package;
 
+import Section.SwagSection;
 import haxe.Json;
-import Section;
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
@@ -15,31 +15,43 @@ typedef SwagSong =
 {
 	var song:String;
 	var notes:Array<SwagSection>;
-	var events:Array<Array<Dynamic>>;
+	var events:Array<Dynamic>;
 	var bpm:Float;
-	var timeSignature:Array<Int>;
 	var needsVoices:Bool;
 	var speed:Float;
-	var ?playerKeyAmount:Int;
-	var ?opponentKeyAmount:Int;
 
 	var player1:String;
 	var player2:String;
 	var gfVersion:String;
 	var stage:String;
 
-	var arrowSkin:String;
-	var splashSkin:String;
 	var uiSkin:String;
 	var uiSkinOpponent:String;
-
 	var validScore:Bool;
+
+	var playerKeyAmount:Null<Int>;
+	var opponentKeyAmount:Null<Int>;
+	var numerator:Null<Int>;
+	var denominator:Null<Int>;
+}
+
+typedef DifferentJSON =
+{
+	var player3:String; //Psych Engine
+	var mania:Null<Int>; //Shaggy
+	var gf:String; //Leather Engine
+	var keyCount:Null<Int>; //Leather Engine
+	var playerKeyCount:Null<Int>; //Leather Engine
+	var timescale:Array<Int>; //Leather Engine
+	var ui_Skin:String; //Leather Engine
 }
 
 class Song
 {
 	private static function onLoadJson(songJson:SwagSong) // Convert old charts to newest format
 	{
+		var songName:String = Paths.formatToSongPath(songJson.song);
+
 		if (songJson.events == null)
 		{
 			songJson.events = [];
@@ -48,11 +60,11 @@ class Song
 				var sec:SwagSection = songJson.notes[secNum];
 
 				var i:Int = 0;
-				var notes = sec.sectionNotes;
+				var notes:Array<Dynamic> = sec.sectionNotes;
 				var len:Int = notes.length;
 				while(i < len)
 				{
-					var note = notes[i];
+					var note:Array<Dynamic> = notes[i];
 					if (note[1] < 0)
 					{
 						songJson.events.push([note[0], [[note[2], note[3], note[4]]]]);
@@ -69,9 +81,10 @@ class Song
 			songJson.playerKeyAmount = 4;
 			songJson.opponentKeyAmount = 4;
 		}
-		if (songJson.timeSignature == null)
+		if (songJson.numerator == null)
 		{
-			songJson.timeSignature = [4, 4];
+			songJson.numerator = 4;
+			songJson.denominator = 4;
 		}
 		if (songJson.uiSkin == null)
 		{
@@ -87,24 +100,21 @@ class Song
 			if (sec.gfSection == null) sec.gfSection = false;
 			if (sec.bpm == null) sec.bpm = songJson.bpm;
 			if (sec.changeBPM == null) sec.changeBPM = false;
-			if (sec.timeSignature == null) sec.timeSignature = songJson.timeSignature;
+			if (sec.numerator == null) sec.numerator = songJson.numerator;
+			if (sec.denominator == null) sec.denominator = songJson.denominator;
 			if (sec.changeSignature == null) sec.changeSignature = false;
 			if (sec.altAnim == null) sec.altAnim = false;
 			if (sec.changeKeys == null) sec.changeKeys = false;
 			if (sec.playerKeys == null) sec.playerKeys = songJson.playerKeyAmount;
 			if (sec.opponentKeys == null) sec.opponentKeys = songJson.opponentKeyAmount;
 			var i:Int = 0;
-			var notes = sec.sectionNotes;
+			var notes:Array<Dynamic> = sec.sectionNotes;
 			var len:Int = notes.length;
 			while(i < len)
 			{
-				//i dont even know if this does anything
-				var note = notes[i];
-				while (note.length < 4) {
-					note.push(null);
-				}
+				var note:Array<Dynamic> = notes[i];
 				if (note[3] != null && Std.isOfType(note[3], Int)) note[3] = editors.ChartingState.noteTypeList[note[3]];
-				if (note[3] == null) note[3] = '';
+				else if (note[3] == null) note[3] = '';
 				if (note[4] == null || note[4].length < 1) note[4] = [0];
 				notes[i] = [note[0], note[1], note[2], note[3], note[4]];
 				i++;
@@ -148,8 +158,8 @@ class Song
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var swagShit:SwagSong = cast Json.parse(rawJson).song; //actual song
-		var tempSong:Dynamic = cast Json.parse(rawJson).song; //copy to check for other variables
+		var tempSong:DifferentJSON = cast Json.parse(rawJson).song;
+		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 
 		if (swagShit.gfVersion == null) {
 			if (tempSong.player3 != null) {
@@ -187,22 +197,9 @@ class Song
 				swagShit.playerKeyAmount = tempSong.playerKeyCount;
 			}
 		}
-		if (swagShit.timeSignature == null) {
-			if (tempSong.numerator != null && tempSong.denominator != null) {
-				swagShit.timeSignature = [tempSong.numerator, tempSong.denominator];
-			}
-			if (tempSong.timescale != null && tempSong.timescale.length == 2) {
-				swagShit.timeSignature = tempSong.timescale;
-			}
-		}
-
-		for (i in 0...tempSong.notes.length) {
-			var sec = tempSong.notes[i];
-			var numerator:Null<Int> = sec.numerator;
-			var denominator:Null<Int> = sec.denominator;
-			if (numerator != null && denominator != null) {
-				swagShit.notes[i].timeSignature = [numerator, denominator];
-			}
+		if (swagShit.numerator == null && tempSong.timescale != null && tempSong.timescale.length == 2) {
+			swagShit.numerator = tempSong.timescale[0];
+			swagShit.denominator = tempSong.timescale[1];
 		}
 
 		swagShit.validScore = true;

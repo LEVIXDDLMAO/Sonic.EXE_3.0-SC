@@ -14,17 +14,13 @@ using StringTools;
 typedef StageFile = {
 	var directory:String;
 	var defaultZoom:Float;
-	var ?isPixelStage:Bool;
 
-	var boyfriend:Array<Float>;
-	var girlfriend:Array<Float>;
-	var opponent:Array<Float>;
-	var ?hide_girlfriend:Bool;
+	var boyfriend:Array<Dynamic>;
+	var girlfriend:Array<Dynamic>;
+	var opponent:Array<Dynamic>;
 
-	var ?camera_boyfriend:Array<Float>;
-	var ?camera_opponent:Array<Float>;
-	var ?camera_girlfriend:Array<Float>;
-	var ?camera_speed:Float;
+	var boyfriendCamOffset:Array<Float>;
+	var opponentCamOffset:Array<Float>;
 }
 
 class StageData {
@@ -87,23 +83,11 @@ class StageData {
 		}
 
 		var stageFile:StageFile = cast Json.parse(rawJson);
-		if (stageFile.isPixelStage == null) {
-			stageFile.isPixelStage = false;
+		if (stageFile.boyfriendCamOffset == null || stageFile.boyfriendCamOffset.length < 2) {
+			stageFile.boyfriendCamOffset = [-100, -100];
 		}
-		if (stageFile.hide_girlfriend == null) {
-			stageFile.hide_girlfriend = false;
-		}
-		if (stageFile.camera_boyfriend == null) {
-			stageFile.camera_boyfriend = [0, 0];
-		}
-		if (stageFile.camera_opponent == null) {
-			stageFile.camera_opponent = [0, 0];
-		}
-		if (stageFile.camera_girlfriend == null) {
-			stageFile.camera_girlfriend = [0, 0];
-		}
-		if (stageFile.camera_speed == null) {
-			stageFile.camera_speed = 1;
+		if (stageFile.opponentCamOffset == null || stageFile.opponentCamOffset.length < 2) {
+			stageFile.opponentCamOffset = [150, -100];
 		}
 		return stageFile;
 	}

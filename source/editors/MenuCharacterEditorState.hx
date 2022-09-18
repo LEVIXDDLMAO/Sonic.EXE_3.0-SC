@@ -179,7 +179,6 @@ class MenuCharacterEditorState extends MusicBeatState
 		};
 
 		var reloadImageButton:FlxButton = new FlxButton(140, confirmInputText.y + 30, "Reload Char", function() {
-			AtlasFrameMaker.clearCache();
 			reloadSelectedCharacter();
 		});
 		
@@ -230,12 +229,7 @@ class MenuCharacterEditorState extends MusicBeatState
 		var char:MenuCharacter = grpWeekCharacters.members[curTypeSelected];
 
 		char.alpha = 1;
-		var imagePath = 'menucharacters/${characterFile.image}';
-		if (Paths.fileExists('images/$imagePath/Animation.json', TEXT)) {
-			char.frames = AtlasFrameMaker.construct(imagePath);
-		} else {
-			char.frames = Paths.getSparrowAtlas(imagePath);
-		}
+		char.frames = Paths.getSparrowAtlas('menucharacters/${characterFile.image}');
 		char.animation.addByPrefix('idle', characterFile.idle_anim, 24);
 		if (curTypeSelected == 1) char.animation.addByPrefix('confirm', characterFile.confirm_anim, 24, false);
 		char.flipX = (characterFile.flipX == true);
@@ -283,26 +277,6 @@ class MenuCharacterEditorState extends MusicBeatState
 
 				if (FlxG.keys.justPressed.ENTER) inputText.hasFocus = false;
 				break;
-			}
-		}
-
-		if (!blockInput) {
-			var blockPressWhileTypingOnStepper = [scaleStepper];
-			for (stepper in blockPressWhileTypingOnStepper) {
-				@:privateAccess
-				var leText:Dynamic = stepper.text_field;
-				var leText:FlxUIInputText = leText;
-				if (leText.hasFocus) {
-					FlxG.sound.muteKeys = [];
-					FlxG.sound.volumeDownKeys = [];
-					FlxG.sound.volumeUpKeys = [];
-					blockInput = true;
-
-					if (FlxG.keys.justPressed.ENTER) {
-						leText.hasFocus = false;
-						leText.focusLost();
-					}
-				}
 			}
 		}
 
@@ -381,7 +355,6 @@ class MenuCharacterEditorState extends MusicBeatState
 				var loadedChar:MenuCharacterFile = cast Json.parse(rawJson);
 				if (loadedChar.idle_anim != null && loadedChar.confirm_anim != null) //Make sure it's really a character
 				{
-					AtlasFrameMaker.clearCache();
 					var cutName:String = _file.name.substr(0, _file.name.length - 5);
 					trace('Successfully loaded file: $cutName');
 					characterFile = loadedChar;

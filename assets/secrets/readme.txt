@@ -1,2 +1,2 @@
 to enable the secrets, type "shubs", "river",
-"shadow" or "bbpanzu" on the title screen!
+"shadow" or "bb" on the title screen!

@@ -4,7 +4,7 @@ import flixel.util.FlxColor;
 
 using StringTools;
 
-class ResetScoreSubState extends MusicBeatSubState
+class ResetScoreSubState extends MusicBeatSubstate
 {
 	var bg:FlxSprite;
 	var alphabetArray:Array<Alphabet> = [];
@@ -15,10 +15,10 @@ class ResetScoreSubState extends MusicBeatSubState
 
 	var song:String;
 	var difficulty:Int;
-	var week:String;
+	var week:Int;
 
-	// Week '' = Freeplay
-	public function new(song:String, difficulty:Int, character:String, week:String = '')
+	// Week -1 = Freeplay
+	public function new(song:String, difficulty:Int, character:String, week:Int = -1)
 	{
 		this.song = song;
 		this.difficulty = difficulty;
@@ -27,8 +27,8 @@ class ResetScoreSubState extends MusicBeatSubState
 		super();
 
 		var name:String = song;
-		if (week.length > 0) {
-			name = WeekData.weeksLoaded.get(week).weekName;
+		if (week > -1) {
+			name = WeekData.weeksLoaded.get(WeekData.weeksList[week]).weekName;
 		}
 		name += ' (${CoolUtil.difficulties[difficulty]})?';
 
@@ -45,11 +45,11 @@ class ResetScoreSubState extends MusicBeatSubState
 		add(text);
 		var text:Alphabet = new Alphabet(0, text.y + 90, name, true, false, 0.05, tooLong);
 		text.screenCenter(X);
-		if (week.length < 1) text.x += 60 * tooLong;
+		if (week == -1) text.x += 60 * tooLong;
 		alphabetArray.push(text);
 		text.alpha = 0;
 		add(text);
-		if (week.length < 1) {
+		if (week == -1) {
 			icon = new HealthIcon(character);
 			icon.setGraphicSize(Std.int(icon.width * tooLong));
 			icon.updateHitbox();
@@ -78,7 +78,7 @@ class ResetScoreSubState extends MusicBeatSubState
 			var spr = alphabetArray[i];
 			spr.alpha += elapsed * 2.5;
 		}
-		if (week.length < 1) icon.alpha += elapsed * 2.5;
+		if (week == -1) icon.alpha += elapsed * 2.5;
 
 		if (controls.UI_LEFT_P || controls.UI_RIGHT_P || FlxG.mouse.wheel != 0) {
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -86,17 +86,17 @@ class ResetScoreSubState extends MusicBeatSubState
 			updateOptions();
 		}
 		if (controls.BACK) {
-			FlxG.sound.play(Paths.sound('cancelMenu'), 0.7);
+			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
 			close();
 		} else if (controls.ACCEPT || FlxG.mouse.justPressed) {
 			if (onYes) {
-				if (week.length < 1) {
+				if (week == -1) {
 					Highscore.resetSong(song, difficulty);
 				} else {
-					Highscore.resetWeek(week, difficulty);
+					Highscore.resetWeek(WeekData.weeksList[week], difficulty);
 				}
 			}
-			FlxG.sound.play(Paths.sound('cancelMenu'), 0.7);
+			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
 			close();
 		}
 		super.update(elapsed);
@@ -111,6 +111,6 @@ class ResetScoreSubState extends MusicBeatSubState
 		yesText.scale.set(scales[confirmInt], scales[confirmInt]);
 		noText.alpha = alphas[1 - confirmInt];
 		noText.scale.set(scales[1 - confirmInt], scales[1 - confirmInt]);
-		if (week.length < 1) icon.animation.curAnim.curFrame = confirmInt;
+		if (week == -1) icon.animation.curAnim.curFrame = confirmInt;
 	}
 }

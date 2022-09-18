@@ -69,7 +69,6 @@ class TitleState extends MusicBeatState
 	{
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
-		Application.current.window.title = "Friday Night Funkin': Psych Engine Extra";
 		
 		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
 		WeekData.loadTheFirstEnabledMod();
@@ -149,10 +148,6 @@ class TitleState extends MusicBeatState
 			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
 		}
 
-		if (FlxG.save.data.lastPlayed != null) {
-			FreeplayState.lastPlayed = FlxG.save.data.lastPlayed;
-		}
-
 		FlxG.mouse.visible = false;
 		#if FREEPLAY
 		MusicBeatState.switchState(new FreeplayState());
@@ -198,11 +193,10 @@ class TitleState extends MusicBeatState
 				FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 
 				FlxG.sound.music.fadeIn(4, 0, 0.7);
-
-				Conductor.changeBPM(titleJSON.bpm);
 			}
 		}
 
+		Conductor.changeBPM(titleJSON.bpm);
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite();
@@ -226,7 +220,6 @@ class TitleState extends MusicBeatState
 		swagShader = new ColorSwap();
 		gfDance = new FlxSprite(titleJSON.gfx, titleJSON.gfy);
 		var easterEgg:String = FlxG.save.data.psychDevsEasterEgg;
-		if (easterEgg == null) easterEgg = '';
 		switch(easterEgg.toUpperCase())
 		{
 			#if TITLE_SCREEN_EASTER_EGG
@@ -247,6 +240,7 @@ class TitleState extends MusicBeatState
 				gfDance.animation.addByIndices('danceLeft', 'BB Title Bump', [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], "", 24, false);
 				gfDance.animation.addByIndices('danceRight', 'BB Title Bump', [27, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], "", 24, false);
 			#end
+
 			default:
 				//EDIT THIS ONE IF YOU'RE MAKING A SOURCE CODE MOD!!!!
 				//EDIT THIS ONE IF YOU'RE MAKING A SOURCE CODE MOD!!!!
@@ -362,7 +356,7 @@ class TitleState extends MusicBeatState
 
 				new FlxTimer().start(0.3, function(tmr:FlxTimer)
 				{
-					if (mustUpdate && !OutdatedState.leftState) {
+					if (mustUpdate) {
 						MusicBeatState.switchState(new OutdatedState());
 					} else {
 						MusicBeatState.switchState(new MainMenuState());

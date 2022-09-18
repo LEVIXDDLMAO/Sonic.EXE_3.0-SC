@@ -1,10 +1,9 @@
 package;
 
-import flixel.addons.display.FlxGridOverlay;
 import flixel.FlxG;
-import flixel.FlxState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxState;
 
 class MusicBeatState extends FlxUIState
 {
@@ -55,7 +54,7 @@ class MusicBeatState extends FlxUIState
 			stepHit();
 
 		if (FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
-		
+
 		super.update(elapsed);
 	}
 
@@ -85,7 +84,6 @@ class MusicBeatState extends FlxUIState
 	}
 
 	public static function switchState(nextState:FlxState) {
-		FlxGridOverlay.clearCache();
 		// Custom made Trans in
 		var curState:Dynamic = FlxG.state;
 		var leState:MusicBeatState = curState;
@@ -103,15 +101,11 @@ class MusicBeatState extends FlxUIState
 			return;
 		}
 		FlxTransitionableState.skipNextTransIn = false;
-		if (nextState == FlxG.state) {
-			FlxG.resetState();
-		} else {
-			FlxG.switchState(nextState);
-		}
+		FlxG.switchState(nextState);
 	}
 
 	public static function resetState() {
-		switchState(FlxG.state);
+		MusicBeatState.switchState(FlxG.state);
 	}
 
 	public static function getState():MusicBeatState {

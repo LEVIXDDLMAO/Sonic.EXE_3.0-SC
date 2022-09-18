@@ -8,14 +8,14 @@ import flixel.input.keyboard.FlxKey;
 
 using StringTools;
 
-class ControlsSubState extends MusicBeatSubState {
+class ControlsSubState extends MusicBeatSubstate {
 	private static var curSelected:Int = -1;
 	private static var curAlt:Bool = false;
 
 	private static var defaultKey:String = 'Reset to Default Keys';
 	private var bindLength:Int = 0;
 
-	var optionShit:Array<Array<String>> = [
+	var optionShit:Array<Dynamic> = [
 		['NOTES (1K)'],
 		['Center', 'note1_0'],
 		[''],
@@ -223,7 +223,7 @@ class ControlsSubState extends MusicBeatSubState {
 			if (controls.BACK) {
 				ClientPrefs.reloadControls();
 				close();
-				FlxG.sound.play(Paths.sound('cancelMenu'), 0.7);
+				FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
 
 			if ((controls.ACCEPT || FlxG.mouse.justPressed) && nextAccept <= 0) {
@@ -231,7 +231,7 @@ class ControlsSubState extends MusicBeatSubState {
 					ClientPrefs.keyBinds = ClientPrefs.defaultKeys.copy();
 					reloadKeys();
 					changeSelection();
-					FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+					FlxG.sound.play(Paths.sound('confirmMenu'));
 				} else if (!unselectableCheck(curSelected)) {
 					bindingTime = 0;
 					rebindingKey = true;
@@ -256,7 +256,7 @@ class ControlsSubState extends MusicBeatSubState {
 				ClientPrefs.keyBinds.set(optionShit[curSelected][1], keysArray);
 
 				reloadKeys();
-				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+				FlxG.sound.play(Paths.sound('confirmMenu'));
 				rebindingKey = false;
 			}
 
@@ -309,8 +309,9 @@ class ControlsSubState extends MusicBeatSubState {
 
 		for (item in grpOptions.members) {
 			item.targetY = bullShit - curSelected;
+			bullShit++;
 
-			if (!unselectableCheck(bullShit)) {
+			if (!unselectableCheck(bullShit-1)) {
 				item.alpha = 0.6;
 				if (item.targetY == 0) {
 					item.alpha = 1;
@@ -331,8 +332,6 @@ class ControlsSubState extends MusicBeatSubState {
 					}
 				}
 			}
-
-			bullShit++;
 		}
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 	}
@@ -368,7 +367,7 @@ class ControlsSubState extends MusicBeatSubState {
 	}
 
 	private function addBindTexts(optionText:Alphabet, num:Int) {
-		var keys = ClientPrefs.keyBinds.get(optionShit[num][1]);
+		var keys:Array<Dynamic> = ClientPrefs.keyBinds.get(optionShit[num][1]);
 		var text1 = new AttachedText(InputFormatter.getKeyName(keys[0]), 400, -55);
 		text1.setPosition(optionText.x + 400, optionText.y - 55);
 		text1.sprTracker = optionText;
