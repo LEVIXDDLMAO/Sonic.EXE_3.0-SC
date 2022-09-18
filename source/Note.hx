@@ -131,6 +131,44 @@ class Note extends FlxSprite
 						} else {
 							earlyHitMult = 0.5;
 						}
+					case 'Static Note':
+						ignoreNote = false;
+						reloadNote('STATIC');
+						noteSplashDisabled = true;
+						colorSwap.hue = 0;
+						colorSwap.saturation = 0;
+						colorSwap.brightness = 0;
+						if (isSustainNote) {
+							missHealth = 0.1;
+						} else {
+							missHealth = 0.3;
+						}
+						hitCausesMiss = false;
+						lateHitMult = 0.5;
+						if (isSustainNote) {
+							earlyHitMult = 0.25;
+						} else {
+							earlyHitMult = 0.5;
+						}
+					case 'Phantom Note':
+						ignoreNote = !isOpponent;
+						reloadNote('PHANTOM');
+						noteSplashDisabled = true;
+						colorSwap.hue = 0;
+						colorSwap.saturation = 0;
+						colorSwap.brightness = 0;
+						if (isSustainNote) {
+							missHealth = 0.1;
+						} else {
+							missHealth = 0.3;
+						}
+						hitCausesMiss = true;
+						lateHitMult = 0.5;
+						if (isSustainNote) {
+							earlyHitMult = 0.25;
+						} else {
+							earlyHitMult = 0.5;
+						}							
 					case 'No Animation':
 						noAnimation = true;
 					case 'GF Sing':

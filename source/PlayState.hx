@@ -297,6 +297,8 @@ class PlayState extends MusicBeatState
 
 	var lastTitle = '';
 
+	var daNoteStatic:FlxSprite = new FlxSprite(0, 0);
+
 	public function new(?inEditor:Bool = false, ?startPos:Float = 0) {
 		this.inEditor = inEditor;
 		if (inEditor) {
@@ -310,6 +312,162 @@ class PlayState extends MusicBeatState
 	{
 		Paths.clearStoredMemory();
 		lastTitle = Application.current.window.title;
+
+		daNoteStatic.frames = Paths.getSparrowAtlas('hitStatic');
+		daNoteStatic.animation.addByPrefix('static', 'staticANIMATION', 24, false);
+		daNoteStatic.animation.play('static');
+
+		remove(daNoteStatic);
+
+		/*if (curSong != SONG.song)
+		{
+			Paths.clearStoredMemory(); // Honestly it's just preloading so idrc.
+
+			// PRELOADING STUFFS
+			if (SONG.song.toLowerCase() == 'too-slow' /&& FlxG.save.data.jumpscares)
+			{
+				daJumpscare.frames = Paths.getSparrowAtlas('sonicJUMPSCARE', 'exe');
+				daJumpscare.animation.addByPrefix('jump', 'sonicSPOOK', 24, false);
+				add(daJumpscare);
+				daJumpscare.animation.play('jump');
+
+				daNoteStatic.frames = Paths.getSparrowAtlas('hitStatic');
+				daNoteStatic.animation.addByPrefix('static', 'staticANIMATION', 24, false);
+				daNoteStatic.animation.play('static');
+
+				remove(daNoteStatic);
+			}
+			else if (SONG.song.toLowerCase() == 'faker')
+			{
+				fakertransform = new FlxSprite(100 - 10000, 100 - 10000);
+				fakertransform.frames = Paths.getSparrowAtlas('Faker_Transformation');
+				fakertransform.animation.addByPrefix('1', 'TransformationRIGHT instance 1');
+				fakertransform.animation.addByPrefix('2', 'TransformationLEFT instance 1');
+				fakertransform.animation.addByPrefix('3', 'TransformationUP instance 1');
+				fakertransform.animation.addByPrefix('4', 'TransformationDOWN instance 1');
+				fakertransform.animation.play('1', true);
+				fakertransform.animation.play('2', true);
+				fakertransform.animation.play('3', true);
+				fakertransform.animation.play('4', true);
+				fakertransform.alpha = 0;
+			}
+			else if (SONG.song.toLowerCase() == 'you-cant-run')
+			{
+				daNoteStatic.frames = Paths.getSparrowAtlas('hitStatic');
+				daNoteStatic.animation.addByPrefix('static', 'staticANIMATION', 24, false);
+				daNoteStatic.animation.play('static');
+
+				remove(daNoteStatic);
+
+				dad = new Character(100, 100, 'sonic.exe alt');
+				add(dad);
+				remove(dad);
+			}
+			else if (SONG.song.toLowerCase() == 'triple-trouble')
+			{
+				daP3Static.frames = Paths.getSparrowAtlas('Phase3Static', 'exe');
+				daP3Static.animation.addByPrefix('P3Static', 'Phase3Static instance 1', 24, false);
+				add(daP3Static);
+				daP3Static.animation.play('P3Static');
+				remove(daP3Static);
+
+				daNoteStatic.frames = Paths.getSparrowAtlas('hitStatic');
+				daNoteStatic.animation.addByPrefix('static', 'staticANIMATION', 24, false);
+				daNoteStatic.animation.play('static');
+
+				remove(daNoteStatic);
+
+				dad = new Character(61.15, -94.75, 'beast');
+				add(dad);
+				remove(dad);
+
+				dad = new Character(61.15, -94.75, 'knucks');
+				add(dad);
+				remove(dad);
+
+				dad = new Character(61.15, -94.75, 'eggdickface');
+				add(dad);
+				remove(dad);
+
+				dad = new Character(61.15, -94.75, 'tails');
+				add(dad);
+				remove(dad);
+
+				boyfriend = new Boyfriend(466.1, 685.6 - 300, 'bf-perspective-flipped');
+				add(boyfriend);
+				remove(boyfriend);
+
+				boyfriend = new Boyfriend(466.1, 685.6 - 300, 'bf-perspective');
+				add(boyfriend);
+				remove(boyfriend);
+			}
+			else if (SONG.song.toLowerCase() == 'sunshine')
+			{
+				var bfdeathshit:FlxSprite = new FlxSprite(); // Yo what if i just preload the game over :)
+				bfdeathshit.frames = Paths.getSparrowAtlas('3DGOpng');
+				bfdeathshit.setGraphicSize(720, 720);
+				bfdeathshit.animation.addByPrefix('firstdeath', 'DeathAnim', 24, false);
+				bfdeathshit.screenCenter();
+				bfdeathshit.animation.play('firstdeath');
+				add(bfdeathshit);
+				bfdeathshit.animation.finishCallback = function(b:String)
+				{
+					remove(bfdeathshit);
+				}
+				dad = new Character(100, 100, 'TDollAlt');
+				add(dad);
+				remove(dad);
+			}
+			else if (SONG.song.toLowerCase() == 'chaos')
+			{
+				FlxG.bitmap.add(Paths.image('characters/fleetway1', 'shared'));
+				FlxG.bitmap.add(Paths.image('characters/fleetway2', 'shared'));
+				FlxG.bitmap.add(Paths.image('characters/fleetway3', 'shared'));
+				FlxG.bitmap.add(Paths.image('Warning', 'exe'));
+				FlxG.bitmap.add(Paths.image('spacebar_icon', 'exe'));
+
+				var dad1:Character = new Character(0, 0, 'fleetway-extras');
+				dad1.alpha = 0.01;
+				add(dad1);
+				remove(dad1);
+
+				var dad2:Character = new Character(0, 0, 'fleetway-extras2');
+				dad2.alpha = 0.01;
+				add(dad2);
+				remove(dad2);
+
+				var dad3:Character = new Character(0, 0, 'fleetway-extras3');
+				dad3.alpha = 0.01;
+				add(dad3);
+				remove(dad3);
+
+				boyfriend = new Boyfriend(2040.55 - 200, 685.6 - 130, 'bf-super');
+				add(boyfriend);
+				remove(boyfriend);
+
+				var poo4:FlxSprite = new FlxSprite();
+				add(poo4);
+				poo4.frames = Paths.getSparrowAtlas('Warning', 'exe');
+				poo4.animation.addByPrefix('a', 'Warning Flash', 24, false);
+				poo4.animation.play('a', true);
+				poo4.alpha = 0.01;
+				remove(poo4);
+
+				var poo1:FlxSprite = new FlxSprite();
+				add(poo1);
+				poo1.frames = Paths.getSparrowAtlas('spacebar_icon', 'exe');
+				poo1.animation.addByPrefix('a', 'spacebar', 24, false);
+				poo1.animation.play('a', true);
+				poo1.alpha = 0.01;
+				remove(poo1);
+
+				preloaded = true;
+			}
+			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0, false);
+			// LOL
+		}
+		else
+			preloaded = true;*/
 
 		// for lua
 		instance = this;
@@ -1567,6 +1725,41 @@ class PlayState extends MusicBeatState
 		if (!inEditor) {
 			CustomFadeTransition.nextCamera = camOther;
 		}
+	}
+
+	function staticHitMiss()
+	{
+		trace('lol you missed the static note!');
+		daNoteStatic = new FlxSprite(0, 0);
+		daNoteStatic.frames = Paths.getSparrowAtlas('hitStatic');
+
+		daNoteStatic.setGraphicSize(FlxG.width, FlxG.height);
+
+		daNoteStatic.screenCenter();
+
+		daNoteStatic.cameras = [camHUD2];
+
+		daNoteStatic.animation.addByPrefix('static', 'staticANIMATION', 24, false);
+
+		daNoteStatic.animation.play('static', true);
+
+		FlxG.camera.shake(0.0025, 0.10);
+
+		// new FlxTimer().start(0.8, function(tmr:FlxTimer)
+		// {
+		// 	shakeCam2 = false;
+		// });
+
+		FlxG.sound.play(Paths.sound("hitStatic1"));
+
+		add(daNoteStatic);
+
+		new FlxTimer().start(.38, function(trol:FlxTimer) // fixed lmao
+		{
+			daNoteStatic.alpha = 0;
+			trace('ended HITSTATICLAWL');
+			remove(daNoteStatic);
+		});
 	}
 
 	function set_songSpeed(value:Float):Float
@@ -4892,6 +5085,14 @@ class PlayState extends MusicBeatState
 			}
 		});
 		combo = 0;
+
+		if (daNote.noteType == 'Static Note'){
+			staticHitMiss();
+			new FlxTimer().start(.38, function(trol:FlxTimer) // fixed lmao
+			{
+				remove(daNoteStatic);
+			});
+		} 
 
 		health -= daNote.missHealth * healthLoss;
 		if (instakillOnMiss)
