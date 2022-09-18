@@ -96,6 +96,8 @@ class Note extends FlxSprite
 
 	public var uiSkin(default, set):SkinFile = null;
 
+	public var isRing:Bool = PlayState.SONG.isRing;
+
 	private function set_texture(value:String):String {
 		if (texture != value) {
 			reloadNote('', value);
@@ -278,11 +280,14 @@ class Note extends FlxSprite
 		if (suffix == null) suffix = '';
 		
 		var skin:String = texture;
-		if (skin == null || skin.length < 1) {
+		if (skin == null || skin.length < 1 && !isRing) {
 			skin = PlayState.SONG.arrowSkin;
-			if(skin == null || skin.length < 1) {
+			if(skin == null || skin.length < 1 && !isRing) {
 				skin = 'NOTE_assets';
 			}
+		}
+		else if (isRing) {
+			skin = 'NOTE_assetsRING';
 		}
 
 		var animName:String = null;
@@ -339,7 +344,7 @@ class Note extends FlxSprite
 			}
 		}
 
-		if (colors.length < 1 || animation.getByName(colors[0]) == null) { //didn't find animations, assume it uses the old note assets
+		if (colors.length < 1 || animation.getByName(colors[0]) == null && !isRing) { //didn't find animations, assume it uses the old note assets
 			animation.addByPrefix('up', 'green0');
 			animation.addByPrefix('right', 'red0');
 			animation.addByPrefix('down', 'blue0');
@@ -358,6 +363,28 @@ class Note extends FlxSprite
 				animation.addByPrefix('downhold', 'blue hold piece0');
 			}
 		}
+		else if (isRing) {
+			animation.addByPrefix('up', 'green0');
+			animation.addByPrefix('right', 'red0');
+			animation.addByPrefix('down', 'blue0');
+			animation.addByPrefix('left', 'purple0');
+			if (isRing) animation.addByPrefix('gold', 'gold0');
+
+			if (isSustainNote)
+			{
+				animation.addByPrefix('leftholdend', 'pruple end hold0');
+				animation.addByPrefix('upholdend', 'green hold end0');
+				animation.addByPrefix('rightholdend', 'red hold end0');
+				animation.addByPrefix('downholdend', 'blue hold end0');
+				if (isRing) animation.addByPrefix('goldholdend', 'red hold end');
+
+				animation.addByPrefix('lefthold', 'purple hold piece0');
+				animation.addByPrefix('uphold', 'green hold piece0');
+				animation.addByPrefix('righthold', 'red hold piece0');
+				animation.addByPrefix('downhold', 'blue hold piece0');
+				if (isRing) animation.addByPrefix('goldhold', 'red hold piece');
+			}
+		}		
 
 		if (isSustainNote) {
 			setGraphicSize(Std.int((width * noteSize) * uiSkin.scale * uiSkin.noteScale), Std.int((height * DEFAULT_NOTE_SIZE) * uiSkin.scale * uiSkin.noteScale));

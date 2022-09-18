@@ -34,6 +34,7 @@ typedef SwagSong =
 	var uiSkinOpponent:String;
 
 	var validScore:Bool;
+	var isRing:Bool;
 }
 
 class Song
@@ -216,6 +217,7 @@ class Song
 		}
 
 		swagShit.validScore = true;
+		swagShit.isRing = false;
 		return swagShit;
 	}
 }
