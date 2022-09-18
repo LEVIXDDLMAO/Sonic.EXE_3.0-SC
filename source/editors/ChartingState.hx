@@ -219,7 +219,8 @@ class ChartingState extends MusicBeatState
 				timeSignature: [4, 4],
 				validScore: false,
 				arrowSkin: null,
-				splashSkin: null
+				splashSkin: null,
+				ringNote: false
 			};
 			addSection(_song.timeSignature[0] * 4);
 			PlayState.SONG = _song;
@@ -3024,6 +3025,7 @@ class ChartingState extends MusicBeatState
 			opponentKeyAmount: _song.opponentKeyAmount,
 			timeSignature: _song.timeSignature,
 			validScore: false,
+			ringNote: false,
 
 			arrowSkin: null,
 			splashSkin: null
