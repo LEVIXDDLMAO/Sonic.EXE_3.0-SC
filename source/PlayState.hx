@@ -179,6 +179,7 @@ class PlayState extends MusicBeatState
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
 	public var camHUD:FlxCamera;
+	public var camHUD2:FlxCamera; // jumpscares, ect..
 	public var camGame:FlxCamera;
 	public var camOther:FlxCamera;
 	public var cameraSpeed:Float = 1;
@@ -494,12 +495,15 @@ class PlayState extends MusicBeatState
 			camGame = new FlxCamera();
 			camHUD = new FlxCamera();
 			camOther = new FlxCamera();
+			camHUD2 = new FlxCamera();
+			camHUD2.bgColor.alpha = 0;
 			camHUD.bgColor.alpha = 0;
 			camOther.bgColor.alpha = 0;
 
 			FlxG.cameras.reset(camGame);
 			FlxG.cameras.add(camHUD, false);
 			FlxG.cameras.add(camOther, false);
+			FlxG.cameras.add(camHUD2, false);
 		} else {
 			var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 			bg.scrollFactor.set();
