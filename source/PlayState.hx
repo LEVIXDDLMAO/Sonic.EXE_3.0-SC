@@ -322,6 +322,7 @@ class PlayState extends MusicBeatState
 
 		remove(daNoteStatic);
 
+		// I'll uncomment this when everything is in a much more finished state
 		/*if (curSong != SONG.song)
 		{
 			Paths.clearStoredMemory(); // Honestly it's just preloading so idrc.
