@@ -10,7 +10,6 @@ import lime.utils.Assets;
 using StringTools;
 
 typedef SkinFile = {
-    var name:String; //just an internal name to make things easier
 	var mania:Array<ManiaArray>; //data for key amounts
     var scale:Float; //overall scale (added ontop of all other scales)
     var noteScale:Float; //additional note scale
@@ -19,21 +18,19 @@ typedef SkinFile = {
     var ratingScale:Float; //rating and 'combo' sprites scale
     var comboNumScale:Float; //combo numbers scale
     var sustainXOffset:Float; //sustain note x offset
-    var downscrollTailYOffset:Null<Float>; //sustain end y offset (for downscroll only)
+    var ?downscrollTailYOffset:Float; //sustain end y offset (for downscroll only)
     var noAntialiasing:Bool; //whether to always have antialiasing disabled
-    var isPixel:Null<Bool>; //if this skin is based off the week 6 one
+    var ?isPixel:Bool; //if this skin is based off the week 6 one
     var introSoundsSuffix:String; //suffix for the countdown sounds
-}
 
-typedef OldSkin = {
-    var tailYOffset:Null<Float>; //was renamed to be more clear as there's no ui editor yet
+    var name:String; //just an internal filename to make things easier
 }
 
 typedef ManiaArray = {
-    var keys:Int; //key amount to be attached to
-    var noteSize:Float; //note scale
-    var noteSpacing:Float; //spacing between each note
-    var xOffset:Float; //extra offset for the strums
+    var keys:Int; //key amount to be attached to [so you don't need to have every single key amount in a skin]
+    var noteSize:Float; //note scale for this key amount
+    var noteSpacing:Float; //x spacing between each note
+    var xOffset:Float; //extra x offset for the strums
     var colors:Array<String>; //name order for the colors
     var directions:Array<String>; //name order for the strum directions
     var singAnimations:Array<String>; //name order for the sing animations
@@ -65,58 +62,34 @@ class UIData {
         daFile = cast Json.parse(rawJson);
         daFile.name = skin;
         
-        var testyFile:OldSkin = cast Json.parse(rawJson);
-        if (daFile.downscrollTailYOffset == null && testyFile.tailYOffset != null) {
-            daFile.downscrollTailYOffset = testyFile.tailYOffset;
-        }
-        if (daFile.isPixel == null) {
-            daFile.isPixel = false;
-        }
-        
         return daFile;
     }
 
     public static function checkImageFile(file:String, uiSkin:SkinFile):String {
+        if (Paths.fileExists('images/$file.png', IMAGE)) {
+            return file;
+        }
         var path:String = 'uiskins/${uiSkin.name}/$file';
-		#if MODS_ALLOWED
-		if (!Assets.exists(Paths.getPath('images/$path.png', IMAGE)) && !FileSystem.exists(Paths.modFolders('images/$path.png'))) {
-		#else
-		if (!Assets.exists(Paths.getPath('images/$path.png', IMAGE))) {
-		#end
-            path = file; //check for it outside of 'uiskins'
-            #if MODS_ALLOWED
-            if (!Assets.exists(Paths.getPath('images/$path.png', IMAGE)) && !FileSystem.exists(Paths.modFolders('images/$path.png'))) {
-            #else
-            if (!Assets.exists(Paths.getPath('images/$path.png', IMAGE))) {
-            #end
-                if (uiSkin.isPixel && Paths.fileExists('images/uiskins/pixel/$file.png', IMAGE)) {
-			        path = 'uiskins/pixel/$file';
-                } else {
-                    path = 'uiskins/default/$file';
-                }
+		if (!Paths.fileExists('images/$path.png', IMAGE) && !Paths.fileExists('images/$file.png', IMAGE)) {
+            if (uiSkin.isPixel && Paths.fileExists('images/uiskins/pixel/$file.png', IMAGE)) {
+                path = 'uiskins/pixel/$file';
+            } else {
+                path = 'uiskins/default/$file';
             }
 		}
         return path;
     }
 
     public static function checkSkinFile(file:String, uiSkin:SkinFile):SkinFile {
+        if (Paths.fileExists('images/$file.png', IMAGE)) {
+            return uiSkin;
+        }
         var path:String = 'uiskins/${uiSkin.name}/$file';
-		#if MODS_ALLOWED
-		if (!Assets.exists(Paths.getPath('images/$path.png', IMAGE)) && !FileSystem.exists(Paths.modFolders('images/$path.png'))) {
-		#else
-		if (!Assets.exists(Paths.getPath('images/$path.png', IMAGE))) {
-		#end
-            path = file; //check for it outside of 'uiskins'
-            #if MODS_ALLOWED
-            if (!Assets.exists(Paths.getPath('images/$path.png', IMAGE)) && !FileSystem.exists(Paths.modFolders('images/$path.png'))) {
-            #else
-            if (!Assets.exists(Paths.getPath('images/$path.png', IMAGE))) {
-            #end
-                if (uiSkin.isPixel && Paths.fileExists('images/uiskins/pixel/$file.png', IMAGE)) {
-                    return getUIFile('pixel');
-                } else {
-                    return getUIFile('');
-                }
+		if (!Paths.fileExists('images/$path.png', IMAGE) && !Paths.fileExists('images/$file.png', IMAGE)) {
+            if (uiSkin.isPixel && Paths.fileExists('images/uiskins/pixel/$file.png', IMAGE)) {
+                return getUIFile('pixel');
+            } else {
+                return getUIFile('');
             }
 		}
         return uiSkin;

@@ -11,8 +11,7 @@ class ClientPrefs {
 	public static var flashing:Bool = true;
 	public static var globalAntialiasing:Bool = true;
 	public static var noteSplashes:Bool = true;
-	public static var noteSplashesOpponent:Bool = false;
-	public static var stageQuality:String = 'Normal';
+	public static var gameQuality:String = 'Normal';
 	public static var framerate:Int = 60;
 	public static var camZooms:Bool = true;
 	public static var hideHud:Bool = false;
@@ -24,6 +23,9 @@ class ClientPrefs {
 	public static var showRatings:Bool = true;
 	public static var noReset:Bool = false;
 	public static var healthBarAlpha:Float = 1;
+	public static var controllerMode:Bool = false;
+	public static var hitsoundVolume:Float = 0;
+	public static var pauseMusic:String = 'Tea Time';
 	public static var freeplayAlphabetic:Bool = false;
 	public static var instVolume:Float = 1;
 	public static var voicesVolume:Float = 1;
@@ -34,6 +36,7 @@ class ClientPrefs {
 	#else
 	public static var autoPause:Bool = false;
 	#end
+	public static var shitMisses:Bool = true;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
 		'scrolltype' => 'multiplicative', 
@@ -188,7 +191,7 @@ class ClientPrefs {
 	];
 	public static var defaultKeys:Map<String, Array<FlxKey>> = null;
 
-	public static function loadDefaultKeys() {
+	public static function setupDefaults() {
 		defaultKeys = keyBinds.copy();
 
 		for (i in 0...Note.MAX_KEYS) {
@@ -206,8 +209,7 @@ class ClientPrefs {
 		FlxG.save.data.flashing = flashing;
 		FlxG.save.data.globalAntialiasing = globalAntialiasing;
 		FlxG.save.data.noteSplashes = noteSplashes;
-		FlxG.save.data.noteSplashesOpponent = noteSplashesOpponent;
-		FlxG.save.data.stageQuality = stageQuality;
+		FlxG.save.data.gameQuality = gameQuality;
 		FlxG.save.data.framerate = framerate;
 		FlxG.save.data.camZooms = camZooms;
 		FlxG.save.data.noteOffset = noteOffset;
@@ -226,6 +228,7 @@ class ClientPrefs {
 		FlxG.save.data.underlayAlpha = underlayAlpha;
 		FlxG.save.data.instantRestart = instantRestart;
 		FlxG.save.data.autoPause = autoPause;
+		FlxG.save.data.shitMisses = shitMisses;
 		FlxG.save.data.achievementsMap = Achievements.achievementsMap;
 		FlxG.save.data.henchmenDeath = Achievements.henchmenDeath;
 
@@ -234,6 +237,9 @@ class ClientPrefs {
 		FlxG.save.data.goodWindow = goodWindow;
 		FlxG.save.data.badWindow = badWindow;
 		FlxG.save.data.safeFrames = safeFrames;
+		FlxG.save.data.controllerMode = controllerMode;
+		FlxG.save.data.hitsoundVolume = hitsoundVolume;
+		FlxG.save.data.pauseMusic = pauseMusic;
 		FlxG.save.data.gameplaySettings = gameplaySettings;
 	
 		FlxG.save.flush();
@@ -267,13 +273,10 @@ class ClientPrefs {
 		if (FlxG.save.data.noteSplashes != null) {
 			noteSplashes = FlxG.save.data.noteSplashes;
 		}
-		if (FlxG.save.data.noteSplashesOpponent != null) {
-			noteSplashesOpponent = FlxG.save.data.noteSplashesOpponent;
-		}
-		if (FlxG.save.data.stageQuality != null) {
-			stageQuality = FlxG.save.data.stageQuality;
+		if (FlxG.save.data.gameQuality != null) {
+			gameQuality = FlxG.save.data.gameQuality;
 		} else if (FlxG.save.data.lowQuality != null) {
-			stageQuality = (FlxG.save.data.lowQuality ? 'Low' : 'Normal');
+			gameQuality = (FlxG.save.data.lowQuality ? 'Low' : 'Normal');
 		}
 		if (FlxG.save.data.framerate != null) {
 			framerate = FlxG.save.data.framerate;
@@ -334,15 +337,15 @@ class ClientPrefs {
 		if (FlxG.save.data.safeFrames != null) {
 			safeFrames = FlxG.save.data.safeFrames;
 		}
-		if (FlxG.save.data.gameplaySettings != null)
-		{
-			var savedMap:Map<String, Dynamic> = FlxG.save.data.gameplaySettings;
-			for (name => value in savedMap)
-			{
-				gameplaySettings.set(name, value);
-			}
+		if(FlxG.save.data.controllerMode != null) {
+			controllerMode = FlxG.save.data.controllerMode;
 		}
-
+		if(FlxG.save.data.hitsoundVolume != null) {
+			hitsoundVolume = FlxG.save.data.hitsoundVolume;
+		}
+		if(FlxG.save.data.pauseMusic != null) {
+			pauseMusic = FlxG.save.data.pauseMusic;
+		}
 		if (FlxG.save.data.freeplayAlphabetic != null) {
 			freeplayAlphabetic = FlxG.save.data.freeplayAlphabetic;
 		}
@@ -362,27 +365,30 @@ class ClientPrefs {
 			autoPause = FlxG.save.data.autoPause;
 			FlxG.autoPause = autoPause;
 		}
+		if (FlxG.save.data.shitMisses != null) {
+			shitMisses = FlxG.save.data.shitMisses;
+		}
+		if (FlxG.save.data.gameplaySettings != null)
+		{
+			var savedMap:Map<String, Dynamic> = FlxG.save.data.gameplaySettings;
+			for (name => value in savedMap)
+			{
+				gameplaySettings.set(name, value);
+			}
+		}
 		
 		// flixel automatically saves your volume!
-		if (FlxG.save.data.volume != null)
-		{
-			FlxG.sound.volume = FlxG.save.data.volume;
-		}
-		if (FlxG.save.data.mute != null)
-		{
-			FlxG.sound.muted = FlxG.save.data.mute;
-		}
+		@:privateAccess
+		FlxG.sound.loadSavedPrefs();
 
 		var save = new FlxSave();
 		save.bind('controls_v2', 'extra');
 		if (save != null && save.data.customControls != null) {
 			var loadedControls:Map<String, Array<FlxKey>> = save.data.customControls;
-			if (loadedControls.get('note_left') == null) { //prevent having old controls
-				for (control => keys in loadedControls) {
-					keyBinds.set(control, keys);
-				}
-				reloadControls();
+			for (control => keys in loadedControls) {
+				keyBinds.set(control, keys);
 			}
+			reloadControls();
 		}
 	}
 

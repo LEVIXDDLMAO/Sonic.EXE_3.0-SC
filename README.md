@@ -27,11 +27,12 @@ _____________________________________
 
 # New Features
 * Custom key amounts (1K to 13K)
-* Custom time signatures (3/4, 12/8, etc.)
-* Custom UI skins (customize notes, splashes, ratings, countdown, etc.)
+* Custom time signatures (1-99/1-64)
+* Custom UI skins (customize rating sprites, countdown sprites, etc.)
 * Character groups (more than one player, opponent, or GF)
+* Hscript compatibility
 * Separate voices for the player and opponent (by adding a 'VoicesDad' file)
-* Gameplay Changers: Play opponent's chart, Song playback speed
+* Gameplay Changers: Play opponent's chart
 * Go to options menu from in-game (go right back to game after you're done!)
 * More Lua functions
 
@@ -50,15 +51,18 @@ _____________________________________
 
 ## Build Instructions:
 ### Installing the Required Programs
-First, you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
+First, you need to install the **latest** Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
 1. [Install Haxe](https://haxe.org/download/)
 2. [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/) after downloading Haxe (make sure to do `haxelib run lime setup flixel` to install the necessary libraries, basically just follow the whole guide)
+
+You should make sure to keep Haxe & Flixel updated. If there is a compilation error, it might be due to having an outdated version.
 
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
 2. Follow instructions to install the application properly.
 3. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
-4. Run `haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit` to install LuaJIT. (Or if you don't want your mod to be able to run .lua scripts, delete the "LUA_ALLOWED" line on Project.xml)
+4. Run `haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit` to install LuaJIT. (If you don't want your mod to be able to run .lua scripts, delete the "LUA_ALLOWED" line on Project.xml)
+5. Run `haxelib git hscript https://github.com/HaxeFoundation/hscript` to install hscript. After that, run `haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex` to install hscript-ex. (If you don't want your mod to be able to run .hscript scripts, delete the "HSCRIPT_ALLOWED" line on Project.xml)
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
@@ -68,7 +72,7 @@ NOTE: If you see any messages relating to deprecated packages, ignore them. They
 #### HTML5
 Compiling to browser is very simple. You just need to run `lime test html5 -debug` (remove "-debug" for official releases) in the root of the project to build and run the HTML5 version. (command prompt navigation guide can be found [here](https://ninjamuffin99.newgrounds.com/news/post/1090480))
 
-Do note that mod compatibility and Lua scripts are disabled in HTML5.
+Do note that modpacks and Lua scripts are unavailable in HTML5.
 
 #### Desktop
 To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
@@ -83,6 +87,6 @@ For Mac, you need to install [Xcode](https://apps.apple.com/us/app/xcode/id49779
 
 For Linux, you only need to open a terminal in the project directory and run `lime test linux -debug` (remove "-debug" for official releases). The executable file will be in export/release/linux/bin.
 
-To build for 32-bit, add `-32 -D 32bits` to the `lime test` command.
+To build for 32-bit, add `-32 -D 32bits` to the `lime test` command:
 
 `lime test windows -32 -D 32bits`

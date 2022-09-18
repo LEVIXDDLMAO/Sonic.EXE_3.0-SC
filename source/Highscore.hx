@@ -10,7 +10,6 @@ class Highscore
 	public static var songScores:Map<String, Int> = new Map();
 	public static var songRating:Map<String, Float> = new Map();
 
-
 	public static function resetSong(song:String, diff:Int = 0):Void
 	{
 		var daSong:String = formatSong(song, diff);
@@ -95,9 +94,10 @@ class Highscore
 		FlxG.save.flush();
 	}
 
-	public static function formatSong(song:String, diff:Int):String
+	public static function formatSong(song:String, diff:Int, useCurrentMod:Bool = true):String
 	{
-		return Paths.formatToSongPath(song) + CoolUtil.getDifficultyFilePath(diff);
+		var daSong = Paths.formatToSongPath(song) + CoolUtil.getDifficultyFilePath(diff);
+		return (useCurrentMod ? WeekData.formatWeek(daSong) : daSong);
 	}
 
 	public static function getScore(song:String, diff:Int):Int
@@ -141,5 +141,13 @@ class Highscore
 		{
 			songRating = FlxG.save.data.songRating;
 		}
+	}
+
+	public static function completedWeek(week:String) {
+		var daWeek = week;
+		if (!week.contains(':') && WeekData.weeksLoaded.exists(WeekData.formatWeek(week))) {
+			daWeek = WeekData.formatWeek(week);
+		}
+		return (StoryMenuState.weekCompleted.exists(daWeek) && StoryMenuState.weekCompleted.get(daWeek));
 	}
 }

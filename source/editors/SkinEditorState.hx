@@ -9,6 +9,7 @@ import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUICheckBox;
+import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
@@ -36,7 +37,7 @@ class SkinEditorState extends MusicBeatState {
 
     private var blockPressWhileTypingOn:Array<FlxUIInputText> = [];
 	private var blockPressWhileTypingOnStepper:Array<FlxUINumericStepper> = [];
-	private var blockPressWhileScrolling:Array<FlxUIDropDownMenuCustom> = [];
+	private var blockPressWhileScrolling:Array<FlxUIDropDownMenu> = [];
 
     var curMania:Int = 4;
 
@@ -56,9 +57,7 @@ class SkinEditorState extends MusicBeatState {
         camMenu.bgColor.alpha = 0;
 
         FlxG.cameras.reset(camEditor);
-		FlxG.cameras.setDefaultDrawTarget(camEditor, true);
-		FlxG.cameras.add(camMenu);
-		FlxG.cameras.setDefaultDrawTarget(camMenu, false);
+		FlxG.cameras.add(camMenu, false);
 
         gridBG = FlxGridOverlay.create(40, 40);
         add(gridBG);
@@ -76,7 +75,7 @@ class SkinEditorState extends MusicBeatState {
         strumNotes = new FlxTypedGroup<StrumNote>();
 
         Conductor.changeBPM(100);
-        Conductor.changeSignature(4, 4);
+        Conductor.changeSignature([4, 4]);
 
         reloadNotes(); 
 

@@ -10,13 +10,10 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
 
 using StringTools;
 
-class BaseOptionsMenu extends MusicBeatSubstate
+class BaseOptionsMenu extends MusicBeatSubState
 {
 	private var curOption:Option = null;
 	private var curSelected:Int = 0;
@@ -78,7 +75,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 		for (i in 0...optionsArray.length)
 		{
-			var optionText:Alphabet = new Alphabet(0, 70 * i, optionsArray[i].name, false, false);
+			var optionText:Alphabet = new Alphabet(0, 70 * i, optionsArray[i].name, optionsArray[i].type == 'button');
 			optionText.isMenuItem = true;
 			optionText.x += 300;
 			optionText.xAdd = 200;
@@ -90,6 +87,9 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				checkbox.sprTracker = optionText;
 				checkbox.ID = i;
 				checkboxGroup.add(checkbox);
+			} else if (optionsArray[i].type == 'button') {
+				optionText.x -= 80;
+				optionText.xAdd -= 80;
 			} else {
 				optionText.x -= 80;
 				optionText.xAdd -= 80;
@@ -133,7 +133,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 		if (controls.BACK) {
 			close();
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.sound.play(Paths.sound('cancelMenu'), 0.7);
 		}
 
 		if (nextAccept <= 0)
@@ -152,6 +152,12 @@ class BaseOptionsMenu extends MusicBeatSubstate
 					curOption.setValue((curOption.getValue() == true) ? false : true);
 					curOption.change();
 					reloadCheckboxes();
+				}
+			} else if (curOption.type == 'button') {
+				if (controls.ACCEPT || FlxG.mouse.justPressed)
+				{
+					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+					curOption.change();
 				}
 			} else {
 				if (controls.UI_LEFT || controls.UI_RIGHT || (FlxG.mouse.wheel != 0 && FlxG.keys.pressed.SHIFT)) {
@@ -235,18 +241,20 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				for (i in 0...optionsArray.length)
 				{
 					var leOption:Option = optionsArray[i];
-					leOption.setValue(leOption.defaultValue);
-					if (leOption.type != 'bool')
-					{
-						if (leOption.type == 'string')
+					if (leOption.type != 'button') {
+						leOption.setValue(leOption.defaultValue);
+						if (leOption.type != 'bool')
 						{
-							leOption.curOption = leOption.options.indexOf(leOption.getValue());
+							if (leOption.type == 'string')
+							{
+								leOption.curOption = leOption.options.indexOf(leOption.getValue());
+							}
+							updateTextFrom(leOption);
 						}
-						updateTextFrom(leOption);
+						leOption.change();
 					}
-					leOption.change();
 				}
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.play(Paths.sound('cancelMenu'), 0.7);
 				reloadCheckboxes();
 			}
 		}

@@ -1,5 +1,4 @@
 -- Lua stuff
-
 function onCreate()
 	-- triggered when the lua file is started, some variables weren't created yet
 end
@@ -67,11 +66,23 @@ end
 
 function onSignatureChange()
 	-- triggered when the song's time signature is changed
-	-- use "numerator" and "denominator" to get the current time signature
+	-- use "signatureNumerator" and "signatureDenominator" to get the current time signature
+end
+
+function onOpenChartEditor()
+	-- Called when you press the chart editor debug key
+	-- return Function_Stop if you want to stop the player from opening the chart editor
+	return Function_Continue;
+end
+
+function onOpenCharacterEditor()
+	-- Called when you press the character editor debug key
+	-- return Function_Stop if you want to stop the player from opening the character editor
+	return Function_Continue;
 end
 
 
--- Substate interactions
+-- SubState interactions
 function onPause()
 	-- Called when you press Pause while not on a cutscene/etc
 	-- return Function_Stop if you want to stop the player from pausing the game
@@ -106,18 +117,16 @@ end
 
 -- Note miss/hit
 function goodNoteHit(id, direction, noteType, isSustainNote, characters)
-	-- Function called when Boyfriend/player 1 hits a note (after note hit calculations)
-	-- NOTE: Will be right side regardless of if opponent play is on
+	-- Function called when the player hits a note (after note hit calculations)
 	-- id: The note member id, you can get whatever variable you want from this note, example: "getPropertyFromGroup('notes', id, 'strumTime')"
 	-- noteData: 0 = Left, 1 = Down, 2 = Up, 3 = Right
 	-- noteType: The note type string/tag
 	-- isSustainNote: If it's a hold note, can be either true or false
-	-- characters: The characters that sing the note, by index
+	-- characters: The characters that sing the note, by group index
 end
 
 function opponentNoteHit(id, direction, noteType, isSustainNote, characters)
-	-- Works the same as goodNoteHit, but for Opponent/player 2's notes being hit
-	-- NOTE: Will be left side regardless of if opponent play is on
+	-- Works the same as goodNoteHit, but for the opponent's notes being hit
 end
 
 function noteMissPress(direction)

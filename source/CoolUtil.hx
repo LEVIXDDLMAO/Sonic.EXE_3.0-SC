@@ -3,6 +3,8 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import lime.app.Application;
+import lime.graphics.Image;
 import openfl.utils.Assets;
 #if MODS_ALLOWED
 import sys.io.File;
@@ -22,12 +24,13 @@ class CoolUtil
 
 	public static var difficulties:Array<String> = [];
 
-	public static function getDifficultyFilePath(num:Null<Int> = null)
+	public static function getDifficultyFilePath(?num:Int = null)
 	{
 		if (num == null) num = PlayState.storyDifficulty;
+		if (num >= difficulties.length) num = difficulties.length - 1;
 
 		var fileSuffix:String = difficulties[num];
-		if (fileSuffix != defaultDifficulty)
+		if (fileSuffix.toLowerCase().trim() != defaultDifficulty.toLowerCase())
 		{
 			fileSuffix = '-$fileSuffix';
 		}
@@ -52,9 +55,11 @@ class CoolUtil
 		var daList:Array<String> = [];
 		#if MODS_ALLOWED
 		if (FileSystem.exists(path)) daList = File.getContent(path).trim().split('\n');
+		else if (Assets.exists(path))
 		#else
-		if (Assets.exists(path)) daList = Assets.getText(path).trim().split('\n');
+		if (Assets.exists(path))
 		#end
+			daList = Assets.getText(path).trim().split('\n');
 
 		for (i in 0...daList.length)
 		{
@@ -63,18 +68,7 @@ class CoolUtil
 
 		return daList;
 	}
-	public static function listFromString(string:String):Array<String>
-	{
-		var daList:Array<String> = [];
-		daList = string.trim().split('\n');
 
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-		}
-
-		return daList;
-	}
 	public static function dominantColor(sprite:FlxSprite):Int {
 		var countByColor:Map<Int, Int> = [];
 		for (col in 0...sprite.frameWidth) {
@@ -132,23 +126,6 @@ class CoolUtil
 		song = Paths.formatToSongPath(song);
 		difficulties = defaultDifficulties.copy();
 		var diffStr:String = WeekData.getCurrentWeek().difficulties;
-		if ((diffStr == null || diffStr.length == 0) && song.length > 0) {
-			var num:Int = 0;
-			for (i in WeekData.weeksLoaded.keys()) {
-				var songs:Array<Dynamic> = WeekData.weeksLoaded.get(i).songs;
-				for (daSong in songs) {
-					var name:String = daSong[0];
-					name.toLowerCase().trim();
-					if (name == song) {
-						PlayState.storyWeek = num;
-						diffStr = WeekData.getCurrentWeek().difficulties;
-						//trace('found difficulties');
-						break;
-					}
-				}
-				num++;
-			}
-		}
 		if (diffStr == null || diffStr.length == 0) diffStr = 'Easy,Normal,Hard';
 		diffStr = diffStr.trim(); //Fuck you HTML5
 
@@ -162,34 +139,38 @@ class CoolUtil
 				if (diffs[i] != null)
 				{
 					diffs[i] = diffs[i].trim();
-					if (diffs[i].length < 1 || diffs[i] == null) diffs.remove(diffs[i]);
+					if (diffs[i].length < 1 || diffs[i] == null) {
+						diffs.remove(diffs[i]);
+					} else {
+						i++;
+					}
 				}
 				else
 				{
 					diffs.remove(diffs[i]);
 				}
-				i++;
+				len = diffs.length;
 			}
 			
 			if (remove && song.length > 0) {
-				for (i in 0...diffs.length) {
+				var i = 0;
+				var len = diffs.length;
+				while (i < len) {
 					if (diffs[i] != null) {
 						var suffix = '-${Paths.formatToSongPath(diffs[i])}';
 						if (Paths.formatToSongPath(diffs[i]) == defaultDifficulty.toLowerCase()) {
 							suffix = '';
 						}
 						var poop:String = song + suffix;
-						#if MODS_ALLOWED
-						if (!FileSystem.exists(Paths.modsData('$song/$poop')) && !Assets.exists(Paths.json('$song/$poop')))
-						#else
-						if (!Assets.exists(Paths.json('$song/$poop')))
-						#end
-						{
+						if (!Paths.fileExists('data/$song/$poop.json', TEXT)) {
 							diffs.remove(diffs[i]);
+						} else {
+							i++;
 						}
 					} else {
 						diffs.remove(diffs[i]);
 					}
+					len = diffs.length;
 				}
 			}
 
@@ -198,5 +179,11 @@ class CoolUtil
 				difficulties = diffs;
 			}
 		}
+	}
+
+	public static function setWindowIcon(image:String = 'iconOG') {
+		Image.loadFromFile(Paths.getPath('images/$image.png', IMAGE)).onComplete(function (img) {
+			Application.current.window.setIcon(img);
+		});
 	}
 }

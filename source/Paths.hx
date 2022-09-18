@@ -5,12 +5,16 @@ import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import haxe.io.Path;
+import lime.app.Promise;
+import lime.app.Future;
+import lime.utils.AssetLibrary;
+import lime.utils.AssetManifest;
 import lime.utils.Assets;
-import openfl.display.BitmapData;
 import openfl.system.System;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 #if MODS_ALLOWED
+import openfl.display.BitmapData;
 import sys.io.File;
 import sys.FileSystem;
 #end
@@ -39,6 +43,12 @@ class Paths
 		'scripts'
 	];
 	#end
+	public static var ignoreLibraries:Array<String> = [
+		'default',
+		'shared',
+		'songs',
+		'videos'
+	];
 
 	public static function excludeAsset(key:String) {
 		if (!dumpExclusions.contains(key))
@@ -52,7 +62,8 @@ class Paths
 		'assets/sounds/confirmMenu.$SOUND_EXT',
 		'assets/sounds/cancelMenu.$SOUND_EXT',
 		'assets/music/freakyMenu.$SOUND_EXT',
-		'shared:assets/shared/music/breakfast.$SOUND_EXT'
+		'shared:assets/shared/music/breakfast.$SOUND_EXT',
+		'shared:assets/shared/music/tea-time.$SOUND_EXT'
 	];
 	/// haya I love you for the base cache dump I took to the max
 	public static function clearUnusedMemory() {
@@ -93,8 +104,8 @@ class Paths
 
 		// clear all sounds that are cached
 		for (key in currentTrackedSounds.keys()) {
-			if (!localTrackedAssets.contains(key) 
-			&& !dumpExclusions.contains(key) && key != null) {
+			if (key != null && !localTrackedAssets.contains(key) 
+			&& !dumpExclusions.contains(key)) {
 				Assets.cache.clear(key);
 				currentTrackedSounds.remove(key);
 			}
@@ -106,6 +117,80 @@ class Paths
 		#end
 	}
 
+	static public function loadLibraryManifest(id:String):Future<AssetLibrary> {
+		var promise = new Promise<AssetLibrary>();
+
+		var library = Assets.getLibrary(id);
+
+		if (library != null)
+		{
+			return Future.withValue(library);
+		}
+
+		var path = id;
+		var rootPath = null;
+
+		@:privateAccess
+		var libraryPaths = Assets.libraryPaths;
+		if (libraryPaths.exists(id))
+		{
+			path = libraryPaths[id];
+			rootPath = Path.directory(path);
+		}
+		else
+		{
+			if (StringTools.endsWith(path, ".bundle"))
+			{
+				rootPath = path;
+				path += "/library.json";
+			}
+			else
+			{
+				rootPath = Path.directory(path);
+			}
+			@:privateAccess
+			path = Assets.__cacheBreak(path);
+		}
+
+		AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest)
+		{
+			if (manifest == null)
+			{
+				promise.error('Cannot parse asset manifest for library "$id"');
+				return;
+			}
+
+			var library = AssetLibrary.fromManifest(manifest);
+
+			if (library == null)
+			{
+				promise.error('Cannot open library "$id"');
+			}
+			else
+			{
+				@:privateAccess
+				Assets.libraries.set(id, library);
+				library.onChange.add(Assets.onChange.dispatch);
+				promise.completeWith(Future.withValue(library));
+			}
+		}).onError(function(_)
+		{
+			promise.error('There is no asset library with an ID of "$id"');
+		});
+
+		return promise.future;
+	}
+
+	static public function getLibraries(ignore:Bool = false):Array<String> {
+		var libraries:Array<String> = [];
+		@:privateAccess
+		for (i in Assets.libraryPaths.keys()) {
+			if (!ignore || !ignoreLibraries.contains(i))
+				libraries.push(i);
+		}
+		return libraries;
+	}
+
 	static public var currentModDirectory:String = '';
 	static public var currentLevel:String;
 	static public function setCurrentLevel(name:String)
@@ -113,7 +198,7 @@ class Paths
 		currentLevel = name.toLowerCase();
 	}
 
-	public static function getPath(file:String, type:AssetType, ?library:Null<String> = null)
+	public static function getPath(file:String, type:AssetType, library:String = null)
 	{
 		if (library != null)
 			return getLibraryPath(file, library);
@@ -163,7 +248,7 @@ class Paths
 
 	inline static public function xml(key:String, ?library:String)
 	{
-		return getPath('data/$key.xml', TEXT, library);
+		return getPath('images/$key.xml', TEXT, library);
 	}
 
 	inline static public function json(key:String, ?library:String)
@@ -198,7 +283,7 @@ class Paths
 		return 'assets/videos/$key.mp4';
 	}
 
-	static public function sound(key:String, ?library:String):Dynamic
+	static public function sound(key:String, ?library:String):Sound
 	{
 		var sound:Sound = returnSound('sounds', key, library);
 		return sound;
@@ -209,20 +294,20 @@ class Paths
 		return sound(key + FlxG.random.int(min, max), library);
 	}
 
-	inline static public function music(key:String, ?library:String):Dynamic
+	inline static public function music(key:String, ?library:String):Sound
 	{
 		var file:Sound = returnSound('music', key, library);
 		return file;
 	}
 
-	inline static public function voices(song:String, ?suffix:String = ''):Any
+	inline static public function voices(song:String, ?suffix:String = ''):Sound
 	{
 		var songKey:String = '${song.toLowerCase().replace(' ', '-')}';
 		var voices = returnSound(songKey, 'Voices$suffix', 'songs');
 		return voices;
 	}
 
-	inline static public function inst(song:String, ?suffix:String = ''):Any
+	inline static public function inst(song:String, ?suffix:String = ''):Sound
 	{
 		var songKey:String = '${song.toLowerCase().replace(' ', '-')}';
 		var inst = returnSound(songKey, 'Inst$suffix', 'songs');
@@ -244,8 +329,8 @@ class Paths
 
 		if (FileSystem.exists(getPreloadPath(key)))
 			return File.getContent(getPreloadPath(key));
-		
 		#end
+
 		return Assets.getText(getPath(key, TEXT));
 	}
 
@@ -274,7 +359,7 @@ class Paths
 		return false;
 	}
 
-	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
+	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
 		#if MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
@@ -304,7 +389,7 @@ class Paths
 		#end
 	}
 
-	inline static public function getTexturePackerAtlas(key:String, ?library:String):FlxAtlasFrames
+	inline static public function getTexturePackerAtlas(key:String, ?library:String)
 	{
 		#if MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
@@ -379,6 +464,14 @@ class Paths
 		localTrackedAssets.push(gottenPath);
 		return currentTrackedSounds.get(gottenPath);
 	}
+
+	inline public static function getContent(path:String) {
+		#if sys
+		return File.getContent(path);
+		#else
+		return OpenFlAssets.getText(path);
+		#end
+	}
 	
 	#if MODS_ALLOWED
 	inline static public function mods(key:String = '') {
@@ -393,8 +486,11 @@ class Paths
 		return modFolders('data/$key.json');
 	}
 
+	inline static public function modsDataTxt(key:String) {
+		return modFolders('data/$key.txt');
+	}
+
 	static public function modsVideo(key:String) {
-		#if MODS_ALLOWED
 		for (i in videoExtensions) {
 			var path = modFolders('videos/$key.$i');
 			if (FileSystem.exists(path))
@@ -402,7 +498,6 @@ class Paths
 				return path;
 			}
 		}
-		#end
 		return modFolders('videos/$key.mp4');
 	}
 
