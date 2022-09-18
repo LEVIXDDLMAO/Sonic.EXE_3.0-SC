@@ -174,6 +174,16 @@ class Song
 						swagShit.playerKeyAmount = 7;
 					case 3:
 						swagShit.playerKeyAmount = 9;
+					case 4:
+						swagShit.playerKeyAmount = 5;
+					case 5:
+						swagShit.playerKeyAmount = 8;
+					case 6:
+						swagShit.playerKeyAmount = 1;
+					case 7:
+						swagShit.playerKeyAmount = 2;
+					case 8:
+						swagShit.playerKeyAmount = 3;
 					default:
 						swagShit.playerKeyAmount = 4;
 				}
