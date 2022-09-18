@@ -519,7 +519,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if (SONG == null)
-			SONG = Song.loadFromJson('tutorial', 'tutorial');
+			SONG = Song.loadFromJson('test', 'test');
 
 		originalSong = Reflect.copy(SONG);
 
