@@ -30579,10 +30579,10 @@
 			]
 		],
 		"isRing": true,
+		"mania": 4,
 		"stage": "sonicExeP3",
 		"needsVoices": true,
 		"bpm": 146,
 		"noteStyle": null
-
 	}
 }
