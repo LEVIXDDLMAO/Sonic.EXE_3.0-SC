@@ -29533,8 +29533,8 @@
 				"mustHitSection": true
 			}
 		],
-		"mania": 5,
-		"player3": null,
+		"isRing": true,
+		"playerKeys": 5,
 		"splashSkin": "noteSplashes",
 		"song": "triple-trouble",
 		"arrowSkin": "NOTE_assetsRING.png",
@@ -30578,7 +30578,6 @@
 				]
 			]
 		],
-		"isRing": true,
 		"stage": "sonicExeP3",
 		"needsVoices": true,
 		"bpm": 146,
