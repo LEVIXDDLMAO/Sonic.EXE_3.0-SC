@@ -13,6 +13,9 @@ Modified version of Psych Engine adding more stuff. (see below)
 * RiverOaken - Arts and Animations
 * shubs - Assistant Coder
 * bbpanzu - Former Coder
+* leviXD - HTML ported
+* Memehoovy - Coder :D ( levis best friend )
+* Sonic.EXE team - The people who made this normal mod
 
 ### Special Thanks
 * KadeDev & GitHub Contributors - Made Kade Engine (some code is from there)
