@@ -283,7 +283,7 @@ class Paths
 		return 'assets/videos/$key.mp4';
 	}
 
-	static public function sound(key:String, ?library:String):Sound
+	static public function sound(key:String, ?library:String):Any
 	{
 		var sound:Sound = returnSound('sounds', key, library);
 		return sound;
@@ -294,27 +294,27 @@ class Paths
 		return sound(key + FlxG.random.int(min, max), library);
 	}
 
-	inline static public function music(key:String, ?library:String):Sound
+	inline static public function music(key:String, ?library:String):Any
 	{
 		var file:Sound = returnSound('music', key, library);
 		return file;
 	}
 
-	inline static public function voices(song:String, ?suffix:String = ''):Sound
+	inline static public function voices(song:String, ?suffix:String = ''):Any
 	{
 		var songKey:String = '${song.toLowerCase().replace(' ', '-')}';
 		var voices = returnSound(songKey, 'Voices$suffix', 'songs');
 		return voices;
 	}
 
-	inline static public function inst(song:String, ?suffix:String = ''):Sound
+	inline static public function inst(song:String, ?suffix:String = ''):Any
 	{
 		var songKey:String = '${song.toLowerCase().replace(' ', '-')}';
 		var inst = returnSound(songKey, 'Inst$suffix', 'songs');
 		return inst;
 	}
 
-	inline static public function image(key:String, ?library:String):FlxGraphic
+	inline static public function image(key:String, ?library:String):Any
 	{
 		// streamlined the assets process more
 		var returnAsset:FlxGraphic = returnGraphic(key, library);
