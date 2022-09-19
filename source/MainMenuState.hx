@@ -33,12 +33,12 @@ class MainMenuState extends MusicBeatState
 	private var camAchievement:FlxCamera;
 	
 	var optionShit:Array<String> = [
-		'menu_story_mode',
-		'menu_freeplay',
+		'story_mode',
+		'freeplay',
 		'menu_encore',
 		'menu_extras',
 		'menu_sound_test',
-		'menu_options',
+		'options',
 	];
 
 	var magenta:FlxSprite;
