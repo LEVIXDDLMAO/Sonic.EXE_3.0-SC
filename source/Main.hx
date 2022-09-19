@@ -21,7 +21,7 @@ class Main extends Sprite
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 	public static var fpsVar:FPS;
-	public var className = Type.getClassName(Type.getClass(this)); // thx stackoverflow
+	// public var className = Type.getClassName(Type.getClass(this)); // thx stackoverflow
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -68,14 +68,7 @@ class Main extends Sprite
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
 
-		#if !debug
-		initialState = TitleState;
-		#end
-
 		ClientPrefs.setupDefaults();
-		// fuck you, persistent caching stays ON during sex
-		FlxGraphic.defaultPersist = true;
-		// the reason for this is we're going to be handling our own cache smartly
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
