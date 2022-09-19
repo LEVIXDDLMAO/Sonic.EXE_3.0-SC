@@ -314,7 +314,7 @@ class Paths
 		return inst;
 	}
 
-	inline static public function image(key:String, ?library:String):Any
+	inline static public function image(key:String, ?library:String):FlxGraphic
 	{
 		// streamlined the assets process more
 		var returnAsset:FlxGraphic = returnGraphic(key, library);

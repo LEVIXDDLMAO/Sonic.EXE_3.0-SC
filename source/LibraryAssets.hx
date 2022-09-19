@@ -52,7 +52,7 @@ class LibraryAssets
 		return assetExists(path, TEXT);
 	}
 
-	public static function imageExists(key:String, ?library:String):Bool
+	public static function imageExists(key:String, ?library:String):Any
 	{
 		return assetExists(Paths.image(key, library), IMAGE);
 	}
