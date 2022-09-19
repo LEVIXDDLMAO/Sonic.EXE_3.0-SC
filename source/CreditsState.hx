@@ -112,12 +112,11 @@ class CreditsState extends MusicBeatState
 			['kawaisprite',			'kawaisprite',		"Composer of Friday Night Funkin'",							'https://twitter.com/kawaisprite',		'6475F3'],
 			[''],
 			["Special thanks"],
-			['Sonic.EXE Team',   'sonicEXEteam'         "The best mod team Im sorry you had to cancel this ( Fly high divide )", 'https://www.reddit.com/r/FridayNightFunkin/' '0000FF'],
+			['Sonic.EXE Team',   'sonicEXEteam',         "The best mod team Im sorry you had to cancel this ( Fly high divide )", 'https://www.reddit.com/r/FridayNightFunkin/' '0000FF'],
 			[''],
 			["Sonic.EXE Psych SC 2.5/3.0"],
 			['LeviXDD', 'levixd', "just an html port and coder",    'https://github.com/LEVIXDDLMAO'  'C30085'],
 			['MemeHoovy',           'memehoovy',        "A smart person<3",                                      'https://twitter.com/meme_hoovy',      'C30085']
-
 		];
 		
 		for(i in pisspoop) {
