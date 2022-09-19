@@ -39,7 +39,6 @@ class MainMenuState extends MusicBeatState
 		'menu_extras',
 		'menu_sound_test',
 		'menu_options',
-		'credits'
 	];
 
 	var magenta:FlxSprite;

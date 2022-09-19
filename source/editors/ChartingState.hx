@@ -59,7 +59,8 @@ class ChartingState extends MusicBeatState
 		'No Animation',
 		'Trail Note',
 		'Static Note',
-		'Phantom Notes'
+		'Phantom Notes',
+		'Goal Notes'     //for final escape
 	];
 	private var noteTypeIntMap:Map<Int, String> = new Map();
 	private var noteTypeMap:Map<String, Null<Int>> = new Map();
