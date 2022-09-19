@@ -717,7 +717,6 @@ class PlayState extends MusicBeatState
 						eggman.antialiasing = ClientPrefs.globalAntialiasing;
 						eggman.scrollFactor.set(1.32, 1);
 						eggman.active = false;
-
 						add(eggman);
 
 						var tail:FlxSprite = new FlxSprite(-199 - 150, -259 + 150).loadGraphic(Paths.image('PolishedP1/TAIL', 'weekEXE'));
@@ -725,7 +724,6 @@ class PlayState extends MusicBeatState
 						tail.antialiasing = ClientPrefs.globalAntialiasing;
 						tail.scrollFactor.set(1.34, 1);
 						tail.active = false;
-
 						add(tail);
 
 						var knuckle:FlxSprite = new FlxSprite(185 + 100, -350 + 150).loadGraphic(Paths.image('PolishedP1/KNUCKLE', 'weekEXE'));
@@ -733,7 +731,6 @@ class PlayState extends MusicBeatState
 						knuckle.antialiasing = ClientPrefs.globalAntialiasing;
 						knuckle.scrollFactor.set(1.36, 1);
 						knuckle.active = false;
-
 						add(knuckle);
 
 						var sticklol:FlxSprite = new FlxSprite(-100, 50);
@@ -743,7 +740,6 @@ class PlayState extends MusicBeatState
 						sticklol.updateHitbox();
 						sticklol.antialiasing = ClientPrefs.globalAntialiasing;
 						sticklol.scrollFactor.set(1.37, 1);
-
 						add(sticklol);
 
 						if (!lowQuality)
