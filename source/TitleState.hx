@@ -69,7 +69,7 @@ class TitleState extends MusicBeatState
 	{
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
-		Application.current.window.title = "Friday Night Funkin': Psych Engine Extra";
+		Application.current.window.title = "Sonic.EXE 2.5/3.0";
 		
 		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
 		WeekData.loadTheFirstEnabledMod();
