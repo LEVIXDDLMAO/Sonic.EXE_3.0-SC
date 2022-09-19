@@ -311,6 +311,8 @@ class PlayState extends MusicBeatState
 		super();
 	}
 
+	public var lowQuality = ClientPrefs.gameQuality == 'Crappy';
+
 	override public function create()
 	{
 		Paths.clearStoredMemory();
@@ -679,6 +681,74 @@ class PlayState extends MusicBeatState
 							stageCurtains.updateHitbox();
 							add(stageCurtains);
 						}
+
+					// SONG 1 STAGE
+					case 'sonicStage':
+					{
+						var sSKY:FlxSprite = new FlxSprite(-222, -16 + 150).loadGraphic(Paths.image('PolishedP1/SKY', 'weekEXE'));
+						sSKY.antialiasing = ClientPrefs.globalAntialiasing;
+						sSKY.scrollFactor.set(1, 1);
+						sSKY.active = false;
+						add(sSKY);
+
+						var hills:FlxSprite = new FlxSprite(-264, -156 + 150).loadGraphic(Paths.image('PolishedP1/HILLS', 'weekEXE'));
+						hills.antialiasing = ClientPrefs.globalAntialiasing;
+						hills.scrollFactor.set(1.1, 1);
+						hills.active = false;
+						if (!lowQuality)
+							add(hills);
+
+						var bg2:FlxSprite = new FlxSprite(-345, -289 + 170).loadGraphic(Paths.image('PolishedP1/FLOOR2', 'weekEXE'));
+						bg2.updateHitbox();
+						bg2.antialiasing = ClientPrefs.globalAntialiasing;
+						bg2.scrollFactor.set(1.2, 1);
+						bg2.active = false;
+						if (!lowQuality)
+							add(bg2);
+
+						var bg:FlxSprite = new FlxSprite(-297, -246 + 150).loadGraphic(Paths.image('PolishedP1/FLOOR1', 'weekEXE'));
+						bg.antialiasing = ClientPrefs.globalAntialiasing;
+						bg.scrollFactor.set(1.3, 1);
+						bg.active = false;
+						add(bg);
+
+						var eggman:FlxSprite = new FlxSprite(-218, -219 + 150).loadGraphic(Paths.image('PolishedP1/EGGMAN', 'weekEXE'));
+						eggman.updateHitbox();
+						eggman.antialiasing = ClientPrefs.globalAntialiasing;
+						eggman.scrollFactor.set(1.32, 1);
+						eggman.active = false;
+
+						add(eggman);
+
+						var tail:FlxSprite = new FlxSprite(-199 - 150, -259 + 150).loadGraphic(Paths.image('PolishedP1/TAIL', 'weekEXE'));
+						tail.updateHitbox();
+						tail.antialiasing = ClientPrefs.globalAntialiasing;
+						tail.scrollFactor.set(1.34, 1);
+						tail.active = false;
+
+						add(tail);
+
+						var knuckle:FlxSprite = new FlxSprite(185 + 100, -350 + 150).loadGraphic(Paths.image('PolishedP1/KNUCKLE', 'weekEXE'));
+						knuckle.updateHitbox();
+						knuckle.antialiasing = ClientPrefs.globalAntialiasing;
+						knuckle.scrollFactor.set(1.36, 1);
+						knuckle.active = false;
+
+						add(knuckle);
+
+						var sticklol:FlxSprite = new FlxSprite(-100, 50);
+						sticklol.frames = Paths.getSparrowAtlas('PolishedP1/TailsSpikeAnimated', 'weekEXE');
+						sticklol.animation.addByPrefix('a', 'Tails Spike Animated instance 1', 4, true);
+						sticklol.setGraphicSize(Std.int(sticklol.width * 1.2));
+						sticklol.updateHitbox();
+						sticklol.antialiasing = ClientPrefs.globalAntialiasing;
+						sticklol.scrollFactor.set(1.37, 1);
+
+						add(sticklol);
+
+						if (!lowQuality)
+							sticklol.animation.play('a', true);
+					}						
 
 					case 'spooky': //Week 2
 						if (ClientPrefs.gameQuality == 'Normal') {
@@ -2259,43 +2329,6 @@ class PlayState extends MusicBeatState
 		setOnHscripts('notes', notes);
 		setOnHscripts('unspawnNotes', unspawnNotes);
 	}
-
-	/*
-	var modules:Array<String> = [];
-	function setupModules() {
-		var sexList:Array<String> = CoolUtil.coolTextFile(Paths.getPreloadPath('scripts/classes/classList.txt'));
-		var filesPushed:Array<String> = [];
-		for (script in sexList) {
-			var file = Paths.getPreloadPath('scripts/classes/$script.hscript');
-			if (OpenFlAssets.exists(file) && !filesPushed.contains(file))
-			{
-				modules.push(Paths.getContent(file));
-				filesPushed.push(file);
-			}
-		}
-
-		#if MODS_ALLOWED
-		var foldersToCheck:Array<String> = [Paths.mods('scripts/classes/')];
-		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0)
-			foldersToCheck.insert(0, Paths.mods('${Paths.currentModDirectory}/scripts/classes/'));
-
-		for (folder in foldersToCheck)
-		{
-			if (FileSystem.exists(folder))
-			{
-				for (file in FileSystem.readDirectory(folder))
-				{
-					if (file.endsWith('.hscript') && !filesPushed.contains(file))
-					{
-						modules.push(Paths.getContent(folder + file));
-						filesPushed.push(folder + file);
-					}
-				}
-			}
-		}
-		#end
-	}
-	*/
 	#end
 
 	function setOnHscripts(variable:String, arg:Dynamic) {
