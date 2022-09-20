@@ -101,8 +101,6 @@ class TitleState extends MusicBeatState
 	var titleText:FlxSprite;
 	var bg:FlxSprite;
 
-	var volume:Float = 1;
-
 	function startIntro()
 	{
 		if (!initialized)
@@ -156,7 +154,7 @@ class TitleState extends MusicBeatState
 		add(blackScreen);
 
 		if (LibraryAssets.soundExists(Paths.sound('TitleLaugh'))) {
-			FlxG.sound.play(Paths.sound('TitleLaugh'), volume, false, null, false, function()
+			FlxG.sound.play(Paths.sound('TitleLaugh'), 1, false, null, false, function()
 			{
 				skipIntro();
 			});
