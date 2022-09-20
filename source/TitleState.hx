@@ -153,7 +153,7 @@ class TitleState extends MusicBeatState
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		add(blackScreen);
 
-		if (LibraryAssets.soundExists(Paths.sound('TitleLaugh'))) {
+		if (Assets.exists(Paths.sound('TitleLaugh'))) {
 			FlxG.sound.play(Paths.sound('TitleLaugh'), 1, false, null, false, function()
 			{
 				skipIntro();
