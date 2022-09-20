@@ -159,7 +159,6 @@ class TitleState extends MusicBeatState
 				skipIntro();
 			});
 		}
-		else skipIntro();
 	}
 
 	var transitioning:Bool = false;
