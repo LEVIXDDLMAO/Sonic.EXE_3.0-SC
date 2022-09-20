@@ -16,7 +16,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.app.Application;
-import openfl.utils.Assets;
+import openfl.Assets;
 #if CHECK_FOR_UPDATES
 import haxe.Http;
 #end
@@ -153,12 +153,10 @@ class TitleState extends MusicBeatState
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		add(blackScreen);
 
-		if (Assets.exists(Paths.sound('TitleLaugh'))) {
-			FlxG.sound.play(Paths.sound('TitleLaugh'), 1, false, null, false, function()
-			{
-				skipIntro();
-			});
-		}
+		FlxG.sound.play(Paths.sound('TitleLaugh'), 1, false, null, false, function()
+		{
+			skipIntro();
+		});
 	}
 
 	var transitioning:Bool = false;
