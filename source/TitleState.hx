@@ -33,6 +33,10 @@ class TitleState extends MusicBeatState
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
+	var credTextShit:Alphabet;
+	var textGroup:FlxGroup;
+
+	var curWacky:Array<String> = [];
 
 	override public function create():Void
 	{
@@ -51,6 +55,9 @@ class TitleState extends MusicBeatState
 
 		PlayerSettings.init();
 
+		curWacky = FlxG.random.getObject(getIntroTextShit());
+
+		swagShader = new ColorSwap();
 		super.create();
 
 		FlxG.save.bind('funkin', 'extra');
@@ -150,8 +157,19 @@ class TitleState extends MusicBeatState
 		// titleText.screenCenter(X);
 		add(titleText);
 
+		credGroup = new FlxGroup();
+		add(credGroup);
+		textGroup = new FlxGroup();
+
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		add(blackScreen);
+		credGroup.add(blackScreen);
+
+		credTextShit = new Alphabet(0, 0, "", true);
+		credTextShit.screenCenter();
+
+		credTextShit.visible = false;
+
+		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
 		FlxG.sound.play(Paths.sound('TitleLaugh'), 1, false, null, false, function()
 		{
@@ -255,7 +273,6 @@ class TitleState extends MusicBeatState
 
 			FlxG.camera.flash(FlxColor.RED, 2);
 			skippedIntro = true;
-			remove(blackScreen);
 		}
 	}
 }
