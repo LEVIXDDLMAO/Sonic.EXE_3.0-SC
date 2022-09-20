@@ -104,9 +104,7 @@ class TitleState extends MusicBeatState
 	}
 
 	var logoBl:FlxSprite;
-	var logoBlBUMP:FlxSprite;
 	var titleText:FlxSprite;
-	var bg:FlxSprite;
 
 	function startIntro()
 	{
